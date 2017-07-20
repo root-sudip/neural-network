@@ -64,13 +64,14 @@ class mlp:
 
 		#get accuration
 		self.test_dim = self.X_test[0].shape
+		print('Test dimention : ',test_dim)
 		self.accuration = np.sum(self.classes == self.Y_test)/self.test_dim * 100
 
 		print ('Test Accuration : ',str(self.accuration),'%')
 		print ('Prediction :',self.classes)
 		print ('Target :',np.asarray(self.Y_test,dtype="int32"))
 
-ob = mlp(50)
+ob = mlp(5)
 
 ob.load_data()
 ob.create_model()
