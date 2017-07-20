@@ -1,7 +1,8 @@
 import numpy as np
 import pandas
 from keras.models import Sequential
-from keras.layers import Dense, Activation
+from keras.layers import Dense
+from keras.layers import Activation
 import pandas as pd
 import csv
 from sklearn.datasets import load_iris
@@ -16,10 +17,12 @@ class mlp:
 
 	def load_data(self,filename):
 
-		self.iris = load_iris()
-		self.X_train = self.iris.data # features data
-		self.Y_train = self.iris.target #target data
-		# self.column_names = self.iris.feature_names
+		# self.iris = load_iris()
+		# self.X_train = self.iris.data # features data
+		# self.Y_train = self.iris.target #target data
+		# # self.column_names = self.iris.feature_names
+		file = open(filename)
+
 
 	def create_model(self):
 		self.Y_train = np_utils.to_categorical(self.Y_train)
@@ -64,7 +67,7 @@ class mlp:
 
 ob = mlp(50)
 
-ob.load_data('iris.csv')
+ob.load_data('iris-train.csv')
 ob.create_model()
 ob.train_model()
 ob.test_model()
