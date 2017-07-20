@@ -44,7 +44,7 @@ class mlp:
 		
 	def train_model(self):
 		self.best_accuracy = 0.0
-		for i in range(0,150):
+		for i in range(0,self.no_epoch):
 			print('Iteration == ',i)
 			self.accuracy_measures = self.model.fit(self.X_train, self.Y_train, nb_epoch=1, batch_size=120)
 			print(self.accuracy_measures.history.keys())
@@ -63,15 +63,15 @@ class mlp:
 		self.classes = self.model.predict_classes(self.X_test, batch_size=120)
 
 		#get accuration
-		self.test_dim = self.X_test[0].shape
-		print('Test dimention : ',test_dim)
+		self.test_dim = self.Y_test.shape
+		print('Test dimention : ',self.test_dim)
 		self.accuration = np.sum(self.classes == self.Y_test)/self.test_dim * 100
 
 		print ('Test Accuration : ',str(self.accuration),'%')
 		print ('Prediction :',self.classes)
 		print ('Target :',np.asarray(self.Y_test,dtype="int32"))
 
-ob = mlp(5)
+ob = mlp(50)
 
 ob.load_data()
 ob.create_model()
