@@ -11,23 +11,29 @@ import operator as op
 from keras.datasets import mnist
 
 import os
+from PIL import Image
 
 class mlp:
 	def __init__(self,no_epoch):
 		print('mlp ceated...')
 		self.no_epoch = no_epoch
 
-	def load_data(self,path_name):
+	def load_data(self,path_name,samples):
 
 		# self.iris = load_iris()
 		# self.X_train = self.iris.data # features data
 		# self.Y_train = self.iris.target #target data
 		# self.column_names = self.iris.feature_names
 		all_array = []
+		one_hot = np.zeros([samples,101])
 		for dirName, subdirList, fileList in os.walk(path_name):
 			print('Dir name : ',dirName)
+			i = 0 
 			for fname in fileList:
 				print('File Name : ',fname)
+				img_array = np.asarray(Image.open(fname))
+			print('i ==>',i)
+			i = i + 1
 
 
 	def create_model(self):
@@ -54,7 +60,7 @@ class mlp:
 		model.add(Dropout(0.5))
 		model.add(Dense(num_classes))
 		model.add(Activation('softmax'))
-		
+
 		self.model.compile(loss='categorical_crossentropy', optimizer='sgd', metrics=['accuracy'])
 		
 	def train_model(self):
@@ -88,7 +94,7 @@ class mlp:
 
 ob = mlp(50)
 
-ob.load_data('101_ObjectCategories')
+ob.load_data('101_ObjectCategories',300)
 #ob.create_model()
 #ob.train_model()
 #ob.test_model()
