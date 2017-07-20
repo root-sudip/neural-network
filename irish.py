@@ -15,13 +15,31 @@ class mlp:
 		print('mlp ceated...')
 		self.no_epoch = no_epoch
 
-	def load_data(self,filename):
+	def load_data(self,filename,rows,cols):
 
 		# self.iris = load_iris()
 		# self.X_train = self.iris.data # features data
 		# self.Y_train = self.iris.target #target data
 		# # self.column_names = self.iris.feature_names
-		file = open(filename)
+		self.X_train = np.zeros([rows,cols])
+		self.Y_train = np.zeros([rows])
+		i = 0
+		j = 0
+		with open(filename) as file:
+			csv_reader = csv.reader(file)
+			for row in csv_reader:
+				for digit in row:
+					if j != cols:
+						self.X_train[i][j] = digit
+					else:
+						j = 0
+						self.Y_train[i] = digit
+						break
+					j = j + 1
+				i = i + 1
+			file.close()
+		
+
 
 
 	def create_model(self):
@@ -44,30 +62,46 @@ class mlp:
 			self.iter_accuracy = op.itemgetter(0)(self.accuracy_measures.history['acc'])
 			if (self.best_accuracy < self.iter_accuracy):
 				self.best_accuracy = self.iter_accuracy
-		print('After Interation best accuracy is : ',self.best_accuracy)
+		print('After interations best accuracy is : ',self.best_accuracy)
 
 
-	def test_model(self):
-		self.iris = load_iris()
-		self.X_test = self.iris.data[:2,:] # features data
+	def test_model(self,filename,rows,cols):
+		#self.iris = load_iris()
+		#self.X_test = self.iris.data[:2,:] # features data
 		#print(self.X_test)
-		self.Y_test = self.iris.target[:2]
+		#self.Y_test = self.iris.target[:2]
 		#print(self.Y_test)
-
+		self.X_test = np.zeros([rows,cols])
+		self.Y_test = np.zeros([rows])
+		i = 0
+		j = 0
+		with open(filename) as file:
+			csv_reader = csv.reader(file)
+			for row in csv_reader:
+				for digit in row:
+					if j != cols:
+						self.X_test[i][j] = digit
+					else:
+						j = 0
+						self.Y_test[i] = digit
+						break
+					j = j + 1
+				i = i + 1
+			file.close()
 
 		self.classes = self.model.predict_classes(self.X_test, batch_size=120)
 
 		#get accuration
 
-		self.accuration = np.sum(self.classes == self.Y_test)/3.0 * 100
+		self.accuration = np.sum(self.classes == self.Y_test)/float(rows) * 100
 
 		print ('Test Accuration : ',str(self.accuration),'%')
 		print ('Prediction :',self.classes)
-		print ('Target :',np.asarray(self.Y_test,dtype="int32"))
+		print ('Target     :',np.asarray(self.Y_test,dtype="int32"))
 
 ob = mlp(50)
 
-ob.load_data('iris-train.csv')
+ob.load_data('iris-train.csv',150,4)
 ob.create_model()
 ob.train_model()
-ob.test_model()
+ob.test_model('iris-test.csv',16,4)
