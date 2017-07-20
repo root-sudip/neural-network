@@ -4,11 +4,15 @@ from keras.models import Sequential
 from keras.layers import Dense, Activation
 import pandas as pd
 import csv
-from sklearn.datasets import load_iris
+#from sklearn.datasets import load_iris
 from keras.utils import np_utils
 import operator as op
 
 from keras.datasets import mnist
+
+
+from keras.layers import Dropout, Flatten
+from keras.layers import Conv2D, MaxPooling2D
 
 import os
 from PIL import Image
@@ -24,42 +28,55 @@ class mlp:
 		# self.X_train = self.iris.data # features data
 		# self.Y_train = self.iris.target #target data
 		# self.column_names = self.iris.feature_names
-		all_array = []
-		one_hot = np.zeros([samples,101])
+		self.all_array_list = []
+		self.Y_train = np.zeros([8734])
+		j = 0 
 		for dirName, subdirList, fileList in os.walk(path_name):
-			print('Dir name : ',dirName)
 			i = 0 
-			for fname in fileList:
-				print('File Name : ',fname)
-				img_array = np.asarray(Image.open(fname))
-			print('i ==>',i)
-			i = i + 1
+			for subDir in subdirList:
+				print('sub dir : ',subDir)
+				for fname in os.listdir(dirName+'/'+subDir+'/'):
+					print('File Name : ',fname)
+					self.img_array = np.asarray(Image.open(dirName+'/'+subDir+'/'+fname).resize((32,32), Image.ANTIALIAS))
+					print(self.img_array.shape)
+					if self.img_array.ndim == 3:
+						self.all_array_list.append(self.img_array)
+						self.Y_train[j] = i	
+						j = j + 1
+				i = i + 1
+		print('len : ',j)
+		self.array_list_l = np.asarray(self.all_array_list)
+
+		self.X_train = np.reshape(self.array_list_l,(8734,32,32,3))
+		print('one_hot : ',self.Y_train)
+		print('features_array : ',self.X_train.shape)
+
 
 
 	def create_model(self):
 		self.Y_train = np_utils.to_categorical(self.Y_train)
 		self.model = Sequential()
-		model.add(Conv2D(32, (3, 3), padding='same',
-                 input_shape=x_train.shape[1:]))
-		model.add(Activation('relu'))
-		model.add(Conv2D(32, (3, 3)))
-		model.add(Activation('relu'))
-		model.add(MaxPooling2D(pool_size=(2, 2)))
-		model.add(Dropout(0.25))
+		self.model.add(Conv2D(32, (3, 3), padding='same',
+                 input_shape=self.X_train.shape[1:]))
+		self.model.add(Activation('relu'))
+		self.model.add(Conv2D(32, (3, 3)))
+		self.model.add(Activation('relu'))
+		self.model.add(MaxPooling2D(pool_size=(2, 2)))
+		self.model.add(Dropout(0.25))
 
-		model.add(Conv2D(64, (3, 3), padding='same'))
-		model.add(Activation('relu'))
-		model.add(Conv2D(64, (3, 3)))
-		model.add(Activation('relu'))
-		model.add(MaxPooling2D(pool_size=(2, 2)))
-		model.add(Dropout(0.25))
+		self.model.add(Conv2D(64, (3, 3), padding='same'))
+		self.model.add(Activation('relu'))
+		self.model.add(Conv2D(64, (3, 3)))
+		self.model.add(Activation('relu'))
+		self.model.add(MaxPooling2D(pool_size=(2, 2)))
+		self.model.add(Dropout(0.25))
 
-		model.add(Flatten())
-		model.add(Dense(512))
-		model.add(Activation('relu'))
-		model.add(Dropout(0.5))
-		model.add(Dense(num_classes))
-		model.add(Activation('softmax'))
+		self.model.add(Flatten())
+		self.model.add(Dense(512))
+		self.model.add(Activation('relu'))
+		self.model.add(Dropout(0.5))
+		self.model.add(Dense(102))
+		self.model.add(Activation('softmax'))
 
 		self.model.compile(loss='categorical_crossentropy', optimizer='sgd', metrics=['accuracy'])
 		
@@ -95,6 +112,6 @@ class mlp:
 ob = mlp(50)
 
 ob.load_data('101_ObjectCategories',300)
-#ob.create_model()
-#ob.train_model()
+ob.create_model()
+ob.train_model()
 #ob.test_model()

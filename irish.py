@@ -43,7 +43,6 @@ class mlp:
 
 
 	def create_model(self):
-		self.Y_train = np_utils.to_categorical(self.Y_train)
 		self.model = Sequential()
 		self.model.add(Dense(output_dim=10, input_dim=4))
 		self.model.add(Activation("relu"))
@@ -54,6 +53,7 @@ class mlp:
 		self.model.compile(loss='categorical_crossentropy', optimizer='sgd', metrics=['accuracy'])
 		
 	def train_model(self):
+		self.Y_train = np_utils.to_categorical(self.Y_train)
 		self.best_accuracy = 0.0
 		for i in range(0,150):
 			print('Iteration == ',i)
