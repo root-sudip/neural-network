@@ -92,18 +92,19 @@ class mlp:
 		print('After Interation best accuracy is : ',self.best_accuracy)
 
 
-	def test_model(self):
+	def test_model(self,filename):
 		# self.iris = load_iris()
 		# self.X_test = self.iris.data[:2,:] # features data
 		# self.Y_test = self.iris.target[:2]
-
-
+		self.X_test = img_array = np.asarray(Image.open(filename).resize((32,32), Image.ANTIALIAS))
+		self.Y_test = np.array([1])
+		self.Y_test[0] = 1
 		self.classes = self.model.predict_classes(self.X_test, batch_size=120)
 
 		#get accuration
 		self.test_dim = self.Y_test.shape
 		print('Test dimention : ',self.test_dim)
-		self.accuration = np.sum(self.classes == self.Y_test)/self.test_dim * 100
+		self.accuration = np.sum(self.classes == self.Y_test)/1 * 100
 
 		print ('Test Accuration : ',str(self.accuration),'%')
 		print ('Prediction :',self.classes)
@@ -114,4 +115,4 @@ ob = mlp(50)
 ob.load_data('101_ObjectCategories',300)
 ob.create_model()
 ob.train_model()
-#ob.test_model()
+ob.test_model('image_0003.jpg')
