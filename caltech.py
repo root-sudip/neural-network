@@ -34,17 +34,16 @@ class mlp:
 		for dirName, subdirList, fileList in os.walk(path_name):
 			i = 0 
 			for subDir in subdirList:
-				print('sub dir : ',subDir)
+				print('sub dir : => ',subDir,'label => ',i)
 				for fname in os.listdir(dirName+'/'+subDir+'/'):
-					print('File Name : ',fname)
+					#print('File Name : ',fname)
 					self.img_array = np.asarray(Image.open(dirName+'/'+subDir+'/'+fname).resize((32,32), Image.ANTIALIAS))
-					print(self.img_array.shape)
+					# print(self.img_array.shape)
 					if self.img_array.ndim == 3:
 						self.all_array_list.append(self.img_array)
 						self.Y_train[j] = i	
 						j = j + 1
 				i = i + 1
-		print('len : ',j)
 		self.array_list_l = np.asarray(self.all_array_list)
 
 		self.X_train = np.reshape(self.array_list_l,(8734,32,32,3))
@@ -56,7 +55,7 @@ class mlp:
 	def create_model(self):
 		self.Y_train = np_utils.to_categorical(self.Y_train)
 		self.model = Sequential()
-		self.model.add(Conv2D(10, (3, 3), padding='same',
+		self.model.add(Conv2D(10, (10, 10), padding='same',
                  input_shape=self.X_train.shape[1:]))
 		#self.model.add(Activation('relu'))
 		#self.model.add(Conv2D(512, (3, 3)))
@@ -64,7 +63,7 @@ class mlp:
 		self.model.add(MaxPooling2D(pool_size=(2, 2)))
 		#self.model.add(Dropout(0.25))
 
-		self.model.add(Conv2D(12, (3, 3), padding='same'))
+		self.model.add(Conv2D(12, (10, 10), padding='same'))
 		self.model.add(Activation('sigmoid'))
 		#self.model.add(Conv2D(512, (3, 3)))
 		#self.model.add(Activation('sigmoid'))
@@ -72,7 +71,7 @@ class mlp:
 		#self.model.add(Dropout(0.25))
 
 
-		self.model.add(Conv2D(14, (3, 3), padding='same'))
+		self.model.add(Conv2D(14, (10, 10), padding='same'))
 		self.model.add(Activation('sigmoid'))
 		#self.model.add(Conv2D(512, (3, 3)))
 		#self.model.add(Activation('sigmoid'))
@@ -81,7 +80,7 @@ class mlp:
 
 
 		self.model.add(Flatten())
-		self.model.add(Dense(512))
+		self.model.add(Dense(102))
 		#self.model.add(Activation('sigmoid'))
 		#self.model.add(Dropout(0.5))
 		#self.model.add(Dense(102))
@@ -114,7 +113,7 @@ class mlp:
 		self.model = model_from_json(self.model)
 		self.model.load_weights("model_16_net.h5")
 
-	def test_model(self,filename):
+	def test_model(self,filename,no_samples):
 		# self.iris = load_iris()
 		# self.X_test = self.iris.data[:2,:] # features data
 		# self.Y_test = self.iris.target[:2]
@@ -123,8 +122,9 @@ class mlp:
 		self.test_list.append(self.X_test)
 		self.X_test = np.asarray(self.test_list)
 
-		self.Y_test = np.zeros([1])
-		self.Y_test[0] = 1
+		self.Y_test = np.zeros([no_samples])
+		self.Y_test[0] = 11
+		#self.Y_test = np_utils.to_categorical(self.Y_test)
 		self.classes = self.model.predict_classes(self.X_test, batch_size=120)
 
 		#get accuration
@@ -142,4 +142,4 @@ ob.load_data('101_ObjectCategories',300)
 ob.create_model()
 ob.train_model()
 ob.save_model()
-ob.test_model('image_0003.jpg')
+ob.test_model('image_0013.jpg',1)
