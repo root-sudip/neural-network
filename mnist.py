@@ -54,6 +54,21 @@ class mlp:
 		print('After Interation best accuracy is : ',self.best_accuracy)
 
 
+	def save_model(self):
+		model_json = self.model.to_json()
+		with open("model_cnn.json", "w") as json_file:
+			json_file.write(model_json)
+		self.model.save_weights("model_cnn.h5")
+
+	def load_mode(self):
+		json_file = open('mod.json', 'r')
+		self.model = json_file.read()
+		json_file.close()
+		self.model = model_from_json(self.model)
+		self.model.load_weights("model_16_net.h5")
+
+
+
 	def test_model(self):
 		# self.iris = load_iris()
 		# self.X_test = self.iris.data[:2,:] # features data
