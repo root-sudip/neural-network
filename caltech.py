@@ -23,6 +23,12 @@ from PIL import Image
 
 import sys
 
+
+import readline
+from os import listdir
+
+
+
 class mlp:
 	def __init__(self,no_epoch):
 		print('mlp ceated...')
@@ -30,17 +36,14 @@ class mlp:
 
 	def load_data(self,path_name,samples):
 
-		# self.iris = load_iris()
-		# self.X_train = self.iris.data # features data
-		# self.Y_train = self.iris.target #target data
-		# self.column_names = self.iris.feature_names
 		self.all_array_list = []
-		self.Y_train = np.zeros([8734])
+		self.Y_train = np.zeros([2121])
 		j = 0 
 		for dirName, subdirList, fileList in os.walk(path_name):
 			i = 0 
 			for subDir in subdirList:
-				print('sub dir : => ',subDir,'label => ',i)
+				
+				num_of_image = 0 
 				for fname in os.listdir(dirName+'/'+subDir+'/'):
 					#print('File Name : ',fname)
 					self.img_array = np.asarray(Image.open(dirName+'/'+subDir+'/'+fname).resize((32,32), Image.ANTIALIAS))
@@ -49,12 +52,19 @@ class mlp:
 						self.all_array_list.append(self.img_array)
 						self.Y_train[j] = i	
 						j = j + 1
+						num_of_image = num_of_image + 1
+						if num_of_image < 40:
+							num_of_image = num_of_image + 1
+						else: 
+							break
+				print('sub dir : => ',subDir,'Number of Image => ',num_of_image,'label => ',i)
 				i = i + 1
 		self.array_list_l = np.asarray(self.all_array_list)
-
-		self.X_train = np.reshape(self.array_list_l,(8734,32,32,3))
+		print('Total number of image => ',j)
+		self.X_train = np.reshape(self.array_list_l,(2121,32,32,3))
 		print('one_hot : ',self.Y_train)
 		print('features_array : ',self.X_train.shape)
+
 
 
 
@@ -115,9 +125,7 @@ class mlp:
 		self.model.load_weights("model_cnn.h5")
 
 	def test_model(self,filename,no_samples):
-		# self.iris = load_iris()
-		# self.X_test = self.iris.data[:2,:] # features data
-		# self.Y_test = self.iris.target[:2]
+	
 		self.test_list = []
 		self.X_test = np.asarray(Image.open(filename).resize((32,32), Image.ANTIALIAS))
 		self.test_list.append(self.X_test)
@@ -125,10 +133,10 @@ class mlp:
 
 		self.Y_test = np.zeros([no_samples])
 		self.Y_test[0] = 11
-		#self.Y_test = np_utils.to_categorical(self.Y_test)
+	
 		self.classes = self.model.predict_classes(self.X_test, batch_size=120)
 
-		#get accuration
+
 		self.test_dim = self.Y_test.shape
 		print('Test dimention : ',self.test_dim)
 		self.accuration = np.sum(self.classes == self.Y_test)/1 * 100
@@ -136,6 +144,18 @@ class mlp:
 		print ('Test Accuration : ',str(self.accuration),'%')
 		print ('Prediction :',self.classes)
 		print ('Target :',np.asarray(self.Y_test,dtype="int32"))
+
+
+def completer(text, state):
+	options = [x for x in listdir('.') if x.startswith(text)]
+	try:
+		return options[state]
+	except IndexError:
+		return None
+
+
+readline.set_completer(completer)
+readline.parse_and_bind("tab: complete")
 
 ob = mlp(50)
 
