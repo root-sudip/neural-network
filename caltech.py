@@ -56,26 +56,35 @@ class mlp:
 	def create_model(self):
 		self.Y_train = np_utils.to_categorical(self.Y_train)
 		self.model = Sequential()
-		self.model.add(Conv2D(32, (3, 3), padding='same',
+		self.model.add(Conv2D(10, (3, 3), padding='same',
                  input_shape=self.X_train.shape[1:]))
-		self.model.add(Activation('relu'))
-		self.model.add(Conv2D(32, (3, 3)))
-		self.model.add(Activation('relu'))
+		#self.model.add(Activation('relu'))
+		#self.model.add(Conv2D(512, (3, 3)))
+		self.model.add(Activation('sigmoid'))
 		self.model.add(MaxPooling2D(pool_size=(2, 2)))
-		self.model.add(Dropout(0.25))
+		#self.model.add(Dropout(0.25))
 
-		self.model.add(Conv2D(64, (3, 3), padding='same'))
-		self.model.add(Activation('relu'))
-		self.model.add(Conv2D(64, (3, 3)))
-		self.model.add(Activation('relu'))
+		self.model.add(Conv2D(12, (3, 3), padding='same'))
+		self.model.add(Activation('sigmoid'))
+		#self.model.add(Conv2D(512, (3, 3)))
+		#self.model.add(Activation('sigmoid'))
 		self.model.add(MaxPooling2D(pool_size=(2, 2)))
-		self.model.add(Dropout(0.25))
+		#self.model.add(Dropout(0.25))
+
+
+		self.model.add(Conv2D(14, (3, 3), padding='same'))
+		self.model.add(Activation('sigmoid'))
+		#self.model.add(Conv2D(512, (3, 3)))
+		#self.model.add(Activation('sigmoid'))
+		self.model.add(MaxPooling2D(pool_size=(2, 2)))
+		#self.model.add(Dropout(0.25))
+
 
 		self.model.add(Flatten())
 		self.model.add(Dense(512))
-		self.model.add(Activation('relu'))
-		self.model.add(Dropout(0.5))
-		self.model.add(Dense(102))
+		#self.model.add(Activation('sigmoid'))
+		#self.model.add(Dropout(0.5))
+		#self.model.add(Dense(102))
 		self.model.add(Activation('softmax'))
 
 		self.model.compile(loss='categorical_crossentropy', optimizer='sgd', metrics=['accuracy'])

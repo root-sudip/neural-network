@@ -31,6 +31,7 @@ class mlp:
 		self.X_test = self.X_test.astype('float32')
 		self.X_train /= 255
 		self.X_test /= 255
+		
 	def create_model(self):
 		self.Y_train = np_utils.to_categorical(self.Y_train)
 		self.model = Sequential()
