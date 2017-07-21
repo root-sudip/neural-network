@@ -89,15 +89,27 @@ class mlp:
 			self.iter_accuracy = op.itemgetter(0)(self.accuracy_measures.history['acc'])
 			if (self.best_accuracy < self.iter_accuracy):
 				self.best_accuracy = self.iter_accuracy
+			self.save_model()
 		print('After Interation best accuracy is : ',self.best_accuracy)
+
+	def save_model(self):
+		model_json = self.model.to_json()
+		with open("model_16_net.json", "w") as json_file:
+			json_file.write(model_json)
+		self.model.save_weights("model_16_net.h5")
+
 
 
 	def test_model(self,filename):
 		# self.iris = load_iris()
 		# self.X_test = self.iris.data[:2,:] # features data
 		# self.Y_test = self.iris.target[:2]
-		self.X_test = img_array = np.asarray(Image.open(filename).resize((32,32), Image.ANTIALIAS))
-		self.Y_test = np.array([1])
+		self.test_list = []
+		self.X_test = np.asarray(Image.open(filename).resize((32,32), Image.ANTIALIAS))
+		self.test_list.append(self.X_test)
+		self.X_test = np.asarray(self.test_list)
+
+		self.Y_test = np.zeros([1])
 		self.Y_test[0] = 1
 		self.classes = self.model.predict_classes(self.X_test, batch_size=120)
 
@@ -115,4 +127,5 @@ ob = mlp(50)
 ob.load_data('101_ObjectCategories',300)
 ob.create_model()
 ob.train_model()
+ob.save_model()
 ob.test_model('image_0003.jpg')
