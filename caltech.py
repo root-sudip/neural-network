@@ -94,11 +94,16 @@ class mlp:
 
 	def save_model(self):
 		model_json = self.model.to_json()
-		with open("model_16_net.json", "w") as json_file:
+		with open("model_cnn.json", "w") as json_file:
 			json_file.write(model_json)
-		self.model.save_weights("model_16_net.h5")
+		self.model.save_weights("model_cnn.h5")
 
-
+	def load_mode(self):
+		json_file = open('mod.json', 'r')
+		self.model = json_file.read()
+		json_file.close()
+		self.model = model_from_json(self.model)
+		self.model.load_weights("model_16_net.h5")
 
 	def test_model(self,filename):
 		# self.iris = load_iris()
