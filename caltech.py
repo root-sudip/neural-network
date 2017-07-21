@@ -14,8 +14,14 @@ from keras.datasets import mnist
 from keras.layers import Dropout, Flatten
 from keras.layers import Conv2D, MaxPooling2D
 
+
+from keras.models import model_from_json
+
 import os
 from PIL import Image
+
+
+import sys
 
 class mlp:
 	def __init__(self,no_epoch):
@@ -57,33 +63,28 @@ class mlp:
 		self.model = Sequential()
 		self.model.add(Conv2D(10, (10, 10), padding='same',
                  input_shape=self.X_train.shape[1:]))
-		#self.model.add(Activation('relu'))
-		#self.model.add(Conv2D(512, (3, 3)))
+	
 		self.model.add(Activation('sigmoid'))
 		self.model.add(MaxPooling2D(pool_size=(2, 2)))
-		#self.model.add(Dropout(0.25))
+	
 
 		self.model.add(Conv2D(12, (10, 10), padding='same'))
 		self.model.add(Activation('sigmoid'))
-		#self.model.add(Conv2D(512, (3, 3)))
-		#self.model.add(Activation('sigmoid'))
+	
 		self.model.add(MaxPooling2D(pool_size=(2, 2)))
-		#self.model.add(Dropout(0.25))
+	
 
 
 		self.model.add(Conv2D(14, (10, 10), padding='same'))
 		self.model.add(Activation('sigmoid'))
-		#self.model.add(Conv2D(512, (3, 3)))
-		#self.model.add(Activation('sigmoid'))
+	
 		self.model.add(MaxPooling2D(pool_size=(2, 2)))
-		#self.model.add(Dropout(0.25))
+		
 
 
 		self.model.add(Flatten())
 		self.model.add(Dense(102))
-		#self.model.add(Activation('sigmoid'))
-		#self.model.add(Dropout(0.5))
-		#self.model.add(Dense(102))
+		
 		self.model.add(Activation('softmax'))
 
 		self.model.compile(loss='categorical_crossentropy', optimizer='sgd', metrics=['accuracy'])
@@ -106,12 +107,12 @@ class mlp:
 			json_file.write(model_json)
 		self.model.save_weights("model_cnn.h5")
 
-	def load_mode(self):
-		json_file = open('mod.json', 'r')
+	def load_model(self):
+		json_file = open('model_cnn.json', 'r')
 		self.model = json_file.read()
 		json_file.close()
 		self.model = model_from_json(self.model)
-		self.model.load_weights("model_16_net.h5")
+		self.model.load_weights("model_cnn.h5")
 
 	def test_model(self,filename,no_samples):
 		# self.iris = load_iris()
@@ -138,8 +139,14 @@ class mlp:
 
 ob = mlp(50)
 
-ob.load_data('101_ObjectCategories',300)
-ob.create_model()
-ob.train_model()
-ob.save_model()
-ob.test_model('image_0013.jpg',1)
+if sys.argv[1] == 'test':
+	print('Trying to predict ...')
+	ob.load_model()
+	ob.test_model('image_0012.jpg',1)
+elif sys.argv[1] == 'train_model':
+	ob.load_data('101_ObjectCategories',300)
+	ob.create_model()
+	ob.train_model()
+	ob.save_model()
+else:
+	print('You should write the argv parameter.')
