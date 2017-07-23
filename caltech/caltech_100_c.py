@@ -173,7 +173,7 @@ ob = mlp(150)
 if sys.argv[1] == 'test':
 	print('Trying to predict ...')
 	ob.load_model()
-	ob.test_model('images_out_1.jpeg',no_samples=1,label=5)
+	ob.test_model('test/download.jpg',no_samples=1,label=52)
 elif sys.argv[1] == 'train_model':
 	ob.load_data('101_ObjectCategories',samples=7496)
 	ob.create_model()
