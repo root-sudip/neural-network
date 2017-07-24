@@ -180,7 +180,7 @@ class mlp:
 
 		self.test_dim = self.Y_test.shape
 		print('Test dimention : ',self.test_dim)
-		self.accuration = np.sum(self.classes == self.Y_test)/1 * 100
+		self.accuration = np.sum(self.classes == self.Y_test)/no_samples * 100
 
 		print ('Test Accuration : ',str(self.accuration),'%')
 		print ('Prediction :',self.classes)
@@ -207,7 +207,7 @@ if sys.argv[1] == 'test':
 elif sys.argv[1] == 'train':
 	ob.load_data('101_ObjectCategories',samples=4405)
 	ob.create_model()
-	ob.train_model()
+	ob.train_model(no_samples=852)
 	ob.save_model()
 else:
 	print('You should write the argv parameters.')
