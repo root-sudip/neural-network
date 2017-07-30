@@ -115,21 +115,13 @@ class mlp:
 			print()
 			print('-' * 50)
 			print('Iteration', iteration)
-			model.fit(X, y, batch_size=128, nb_epoch=2)
-			model.save_weights('GoTweights',overwrite=True)
-
-
-
-		self.best_accuracy = 0.0
-		for i in range(0,self.no_epoch):
-			print('Iteration == ',i)
-			self.accuracy_measures = self.model.fit(self.X_train, self.Y_train, nb_epoch=1, batch_size=120)
+			self.accuracy_measures = model.fit(X, y, batch_size=128, nb_epoch=2)
 			print(self.accuracy_measures.history.keys())
 			self.iter_accuracy = op.itemgetter(0)(self.accuracy_measures.history['acc'])
 			if (self.best_accuracy < self.iter_accuracy):
 				self.best_accuracy = self.iter_accuracy
 			self.save_model()
-		print('After Interation best accuracy is : ',self.best_accuracy)
+		print('After Interation best accuracy is : ',self.best_accuracy)	
 
 	def save_model(self):
 		model_json = self.model.to_json()
