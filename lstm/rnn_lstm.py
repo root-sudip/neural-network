@@ -1,27 +1,23 @@
+from __future__ import print_function
 import numpy as np
 import pandas
 
 import pandas as pd
 import csv
 #from sklearn.datasets import load_iris
-from __future__ import print_function
 
 from keras.models import Sequential
 from keras.layers.core import Dense, Activation, Dropout
 from keras.layers.recurrent import LSTM
 from keras.utils.data_utils import get_file
+from keras.models import model_from_json
 
 import operator as op
-
-
-from keras.models import model_from_json
 
 import os
 from PIL import Image
 
-
 import sys
-
 
 import readline
 from os import listdir
@@ -42,7 +38,7 @@ class mlp:
 			import codecs
 			self.text = codecs.open(path, encoding='utf-8').read().lower()
 
-		print('corpus length:', len(text))
+		print('corpus length:', len(self.text))
 
 		self.chars = set(self.text)
 		self.words = set(open('got.txt').read().lower().split())
@@ -55,6 +51,7 @@ class mlp:
 
 		self.word_indices = dict((c, i) for i, c in enumerate(self.words))
 		self.indices_word = dict((i, c) for i, c in enumerate(self.words))
+
 
 		print("word_indices", type(self.word_indices), "length:",len(self.word_indices) )
 		print("indices_words", type(self.indices_word), "length", len(self.indices_word))
@@ -69,8 +66,8 @@ class mlp:
 		self.list_words = []
 
 		self.sentences2=[]
-		self.list_words=self.text.lower().split()
-
+		self.list_words=self.text.lower().split()#collecting the list of words
+		
 
 		for i in range(0,len(self.list_words)-self.maxlen, self.step):
 			self.sentences2 = ' '.join(self.list_words[i: i + self.maxlen])
@@ -79,25 +76,27 @@ class mlp:
 		print('nb sequences(length of sentences):', len(self.sentences))
 		print("length of next_word",len(self.next_words))
 
+
 		print('Vectorization...')
 		self.X = np.zeros((len(self.sentences), self.maxlen, len(self.words)), dtype=np.bool)
 		self.y = np.zeros((len(self.sentences), len(self.words)), dtype=np.bool)
 		for i, sentence in enumerate(self.sentences):
-    		for t, word in enumerate(self.sentence.split()):
-        		#print(i,t,word)
-        		self.X[i, t, word_indices[word]] = 1
-    		self.y[i, word_indices[next_words[i]]] = 1
+			for t, word in enumerate(sentence.split()):
+				print(t,word)
+				self.X[i, t, self.word_indices[word]] = 1
+			self.y[i, self.word_indices[self.next_words[i]]] = 1
 
-
+		print(self.X)
+		print('Y ',self.y)
 
 
 	def create_model(self):
 		self.model = Sequential()
-		self.model.add(LSTM(512, return_sequences=True, input_shape=(maxlen, len(words))))
+		self.model.add(LSTM(512, return_sequences=True, input_shape=(self.maxlen, len(self.words))))
 		self.model.add(Dropout(0.2))
 		self.model.add(LSTM(512, return_sequences=False))
 		self.model.add(Dropout(0.2))
-		self.model.add(Dense(len(words)))
+		self.model.add(Dense(len(self.words)))
 		#model.add(Dense(1000))
 		self.model.add(Activation('softmax'))
 
@@ -113,16 +112,13 @@ class mlp:
 		self.best_accuracy = 0.0
 		for iteration in range(0, self.no_epoch):
 			print('Iteration == ',iteration)
-			print()
-			print('-' * 50)
-			print('Iteration', iteration)
-			self.accuracy_measures = self.model.fit(X, y, batch_size=128, nb_epoch=2)
+			self.accuracy_measures = self.model.fit(self.X, self.y, batch_size=128, epochs=1)
 			print(self.accuracy_measures.history.keys())
-			self.iter_accuracy = op.itemgetter(0)(self.accuracy_measures.history['acc'])
-			if (self.best_accuracy < self.iter_accuracy):
-				self.best_accuracy = self.iter_accuracy
-			self.save_model()
-		print('After Interation best accuracy is : ',self.best_accuracy)	
+		# 	self.iter_accuracy = op.itemgetter(0)(self.accuracy_measures.history['acc'])
+		# 	if (self.best_accuracy < self.iter_accuracy):
+		# 		self.best_accuracy = self.iter_accuracy
+		# 	self.save_model()
+		# print('After Interation best accuracy is : ',self.best_accuracy)	
 
 	def save_model(self):
 		model_json = self.model.to_json()
@@ -176,11 +172,11 @@ if sys.argv[1] == 'test':
 	print('Trying to predict ...')
 	ob.load_model()
 	ob.test_model('image_0005.jpg',no_samples=1,label=42)
-elif sys.argv[1] == 'train_model':
+elif sys.argv[1] == 'train':
 	ob.load_data('101_ObjectCategories',samples=7496)
 	ob.create_model()
-	ob.train_model()
-	ob.save_model()
+	#ob.train_model()
+	#ob.save_model()
 else:
 	print('You should write the argv parameters.')
 
