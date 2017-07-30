@@ -11,6 +11,7 @@ from keras.layers.core import Dense, Activation, Dropout
 from keras.layers.recurrent import LSTM
 from keras.utils.data_utils import get_file
 
+import operator as op
 
 
 from keras.models import model_from_json
@@ -33,74 +34,74 @@ class mlp:
 		self.no_epoch = no_epoch
 
 	def load_data(self,path_name,samples=None):
-		path = "got.txt"
+		self.path = "got.txt"
 
 		try: 
-			text = open(path).read().lower()
+			self.text = open(self.path).read().lower()
 		except UnicodeDecodeError:
 			import codecs
-			text = codecs.open(path, encoding='utf-8').read().lower()
+			self.text = codecs.open(path, encoding='utf-8').read().lower()
 
 		print('corpus length:', len(text))
 
-		chars = set(text)
-		words = set(open('got.txt').read().lower().split())
+		self.chars = set(self.text)
+		self.words = set(open('got.txt').read().lower().split())
 
-		print("chars:",type(chars))
-		print("words",type(words))
-		print("total number of unique words",len(words))
-		print("total number of unique chars", len(chars))
-
-
-		word_indices = dict((c, i) for i, c in enumerate(words))
-		indices_word = dict((i, c) for i, c in enumerate(words))
-
-		print("word_indices", type(word_indices), "length:",len(word_indices) )
-		print("indices_words", type(indices_word), "length", len(indices_word))
-
-		maxlen = 30
-		step = 3
-		print("maxlen:",maxlen,"step:", step)
-		sentences = []
-		next_words = []
-		next_words= []
-		sentences1 = []
-		list_words = []
-
-		sentences2=[]
-		list_words=text.lower().split()
+		print("chars:",type(self.chars))
+		print("words",type(self.words))
+		print("total number of unique words",len(self.words))
+		print("total number of unique chars", len(self.chars))
 
 
-		for i in range(0,len(list_words)-maxlen, step):
-			sentences2 = ' '.join(list_words[i: i + maxlen])
-			sentences.append(sentences2)
-			next_words.append((list_words[i + maxlen]))
-		print('nb sequences(length of sentences):', len(sentences))
-		print("length of next_word",len(next_words))
+		self.word_indices = dict((c, i) for i, c in enumerate(self.words))
+		self.indices_word = dict((i, c) for i, c in enumerate(self.words))
+
+		print("word_indices", type(self.word_indices), "length:",len(self.word_indices) )
+		print("indices_words", type(self.indices_word), "length", len(self.indices_word))
+
+		self.maxlen = 30
+		self.step = 3
+		print("maxlen:",self.maxlen,"step:", self.step)
+		self.sentences = []
+		self.next_words = []
+		self.next_words= []
+		self.sentences1 = []
+		self.list_words = []
+
+		self.sentences2=[]
+		self.list_words=self.text.lower().split()
+
+
+		for i in range(0,len(self.list_words)-self.maxlen, self.step):
+			self.sentences2 = ' '.join(self.list_words[i: i + self.maxlen])
+			self.sentences.append(self.sentences2)
+			self.next_words.append((self.list_words[i + self.maxlen]))
+		print('nb sequences(length of sentences):', len(self.sentences))
+		print("length of next_word",len(self.next_words))
 
 		print('Vectorization...')
-		X = np.zeros((len(sentences), maxlen, len(words)), dtype=np.bool)
-		y = np.zeros((len(sentences), len(words)), dtype=np.bool)
-		for i, sentence in enumerate(sentences):
-    		for t, word in enumerate(sentence.split()):
+		self.X = np.zeros((len(self.sentences), self.maxlen, len(self.words)), dtype=np.bool)
+		self.y = np.zeros((len(self.sentences), len(self.words)), dtype=np.bool)
+		for i, sentence in enumerate(self.sentences):
+    		for t, word in enumerate(self.sentence.split()):
         		#print(i,t,word)
-        		X[i, t, word_indices[word]] = 1
-    		y[i, word_indices[next_words[i]]] = 1
+        		self.X[i, t, word_indices[word]] = 1
+    		self.y[i, word_indices[next_words[i]]] = 1
 
 
 
 
 	def create_model(self):
-		model = Sequential()
-		model.add(LSTM(512, return_sequences=True, input_shape=(maxlen, len(words))))
-		model.add(Dropout(0.2))
-		model.add(LSTM(512, return_sequences=False))
-		model.add(Dropout(0.2))
-		model.add(Dense(len(words)))
+		self.model = Sequential()
+		self.model.add(LSTM(512, return_sequences=True, input_shape=(maxlen, len(words))))
+		self.model.add(Dropout(0.2))
+		self.model.add(LSTM(512, return_sequences=False))
+		self.model.add(Dropout(0.2))
+		self.model.add(Dense(len(words)))
 		#model.add(Dense(1000))
-		model.add(Activation('softmax'))
+		self.model.add(Activation('softmax'))
 
-		model.compile(loss='categorical_crossentropy', optimizer='rmsprop')
+		self.model.compile(loss='categorical_crossentropy', optimizer='rmsprop')
 	def sample(a, temperature=1.0):
 		# helper function to sample an index from a probability array
 		a = np.log(a) / temperature
@@ -110,12 +111,12 @@ class mlp:
 	def train_model(self):
 
 		self.best_accuracy = 0.0
-		for iteration in range(1, 300):
+		for iteration in range(0, self.no_epoch):
 			print('Iteration == ',iteration)
 			print()
 			print('-' * 50)
 			print('Iteration', iteration)
-			self.accuracy_measures = model.fit(X, y, batch_size=128, nb_epoch=2)
+			self.accuracy_measures = self.model.fit(X, y, batch_size=128, nb_epoch=2)
 			print(self.accuracy_measures.history.keys())
 			self.iter_accuracy = op.itemgetter(0)(self.accuracy_measures.history['acc'])
 			if (self.best_accuracy < self.iter_accuracy):
