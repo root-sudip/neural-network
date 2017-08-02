@@ -166,7 +166,7 @@ if sys.argv[1] == 'test':
 	ob.load_model()
 	ob.test_model('image_0005.jpg',no_samples=1,label=42)
 elif sys.argv[1] == 'train':
-	ob.load_data('101_ObjectCategories',samples=7496)
+	#ob.load_data('101_ObjectCategories',samples=7496)
 	ob.create_model()
 	ob.train_model()
 	ob.save_model()
