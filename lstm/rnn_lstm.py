@@ -75,7 +75,7 @@ class mlp:
 			self.next_words.append((self.list_words[i + self.maxlen]))
 		print('nb sequences(length of sentences):', len(self.sentences))
 		print("length of next_word",len(self.next_words))
-
+		#for 
 
 		print('Vectorization...')
 		self.X = np.zeros((len(self.sentences), self.maxlen, len(self.words)), dtype=np.bool)
@@ -86,8 +86,8 @@ class mlp:
 				self.X[i, t, self.word_indices[word]] = 1
 			self.y[i, self.word_indices[self.next_words[i]]] = 1
 
-		print(self.X)
-		print('Y ',self.y)
+		print(self.sentences)
+		print('Y ',self.next_words)
 
 
 	def create_model(self):
@@ -134,26 +134,16 @@ class mlp:
 		self.model.load_weights("model_cnn.h5")
 
 	def test_model(self,filename,no_samples=None,label=None):
-	
-		self.test_list = []
-		self.X_test = np.asarray(Image.open(filename).resize((32,32), Image.ANTIALIAS))
-		self.test_list.append(self.X_test)
-		self.X_test = np.asarray(self.test_list)
-
-		self.Y_test = np.zeros([no_samples])
-		self.Y_test[0] = label
-	
-		self.classes = self.model.predict_classes(self.X_test, batch_size=1)
-
-
-		self.test_dim = self.Y_test.shape
-		print('Test dimention : ',self.test_dim)
-		self.accuration = np.sum(self.classes == self.Y_test)/1 * 100
-
-		print ('Test Accuration : ',str(self.accuration),'%')
-		print ('Prediction :',self.classes)
-		print ('Target :',np.asarray(self.Y_test,dtype="int32"))
-
+		start_index = random.randint(0, len(list_words) - self.maxlen - 1)
+		sentence = self.list_words[start_index: start_index + self.maxlen]
+		for t, word in enumerate(sentence):
+                x[0, t, word_indices[word]] = 1.
+		preds = model.predict(x, verbose=0)[0]
+		next_index = sample(preds, diversity)
+		next_word = indices_word[next_index]
+		generated += next_word
+		generated += ' '.join(sentence)
+		print('generated text : ',generated)
 
 def completer(text, state):
 	options = [x for x in listdir('.') if x.startswith(text)]
@@ -175,8 +165,8 @@ if sys.argv[1] == 'test':
 elif sys.argv[1] == 'train':
 	ob.load_data('101_ObjectCategories',samples=7496)
 	ob.create_model()
-	#ob.train_model()
-	#ob.save_model()
+	ob.train_model()
+	ob.save_model()
 else:
 	print('You should write the argv parameters.')
 
