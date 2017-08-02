@@ -21,7 +21,7 @@ import sys
 
 import readline
 from os import listdir
-
+import random
 
 
 class mlp:
@@ -29,7 +29,6 @@ class mlp:
 		print('cnn ceated...')
 		self.no_epoch = no_epoch
 
-	def load_data(self,path_name,samples=None):
 		self.path = "got.txt"
 
 		try: 
@@ -134,16 +133,20 @@ class mlp:
 		self.model.load_weights("model_cnn.h5")
 
 	def test_model(self,filename,no_samples=None,label=None):
-		start_index = random.randint(0, len(list_words) - self.maxlen - 1)
+
+		start_index = random.randint(0, len(self.list_words) - self.maxlen - 1)
 		sentence = self.list_words[start_index: start_index + self.maxlen]
+		print('Sequence : ',sentence)
+		X_test = np.zeros((1,self.maxlen, len(self.words)), dtype=np.bool)
 		for t, word in enumerate(sentence):
-                x[0, t, word_indices[word]] = 1.
-		preds = model.predict(x, verbose=0)[0]
-		next_index = sample(preds, diversity)
-		next_word = indices_word[next_index]
-		generated += next_word
-		generated += ' '.join(sentence)
-		print('generated text : ',generated)
+			X_test[0, t, self.word_indices[word]] = 1.
+		preds = self.model.predict(X_test, verbose=0)[0]
+		next_index = np.argmax(preds)
+		#next_index = sample(preds, diversity)
+		next_word = self.indices_word[next_index]
+		#generated += next_word
+		#generated += ' '.join(sentence)
+		print('generated text : ',next_word)
 
 def completer(text, state):
 	options = [x for x in listdir('.') if x.startswith(text)]
