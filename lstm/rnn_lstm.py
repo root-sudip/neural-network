@@ -85,8 +85,8 @@ class mlp:
 				self.X[i, t, self.word_indices[word]] = 1
 			self.y[i, self.word_indices[self.next_words[i]]] = 1
 
-		print(self.sentences)
-		print('Y ',self.next_words)
+		#print(self.sentences)
+		#print('Y ',self.next_words)
 
 
 	def create_model(self):
@@ -141,6 +141,7 @@ class mlp:
 		for t, word in enumerate(sentence):
 			X_test[0, t, self.word_indices[word]] = 1.
 		preds = self.model.predict(X_test, verbose=0)[0]
+		#print('Confidence value : ',preds)
 		next_index = np.argmax(preds)
 		#next_index = sample(preds, diversity)
 		next_word = self.indices_word[next_index]
