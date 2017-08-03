@@ -160,10 +160,16 @@ class mlp:
 		start_index = random.randint(0, len(self.list_words) - self.maxlen - 1)
 		sentence = self.list_words[start_index: start_index + self.maxlen]
 		print('Sequence : ',sentence)
-		X_test = np.zeros((1,self.maxlen, len(self.words)), dtype=np.bool)
-		for t, word in enumerate(sentence):
-			X_test[0, t, self.word_indices[word]] = 1.
-		preds = self.model.predict(X_test, verbose=0)[0]
+		X_test = np.zeros((self.maxlen, 1))
+		
+		i = 0
+		for word in sentence:
+			X_test[i][0] = self.word_indices[word]												
+			i = i + 1
+		X_test = np.reshape(X_test, (1, self.maxlen, 1))
+		# for t, word in enumerate(sentence):
+		# 	X_test[0, t, self.word_indices[word]] = 1.
+		preds = self.model.predict(X_test, verbose=0)
 		#print('Confidence value : ',preds)
 		next_index = np.argmax(preds)
 		#next_index = sample(preds, diversity)
