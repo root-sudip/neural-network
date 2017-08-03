@@ -37,7 +37,7 @@ class ExampleApp(tk.Tk):
         self.x = self.y = 0
         self._images = images()
         self.position = 0
-
+        self.imgk = 0
         self.canvas = tk.Canvas(self, width=1280, height=720, cursor="cross")
         self.canvas.pack(side="top", fill="both", expand=True)
 
@@ -67,15 +67,21 @@ class ExampleApp(tk.Tk):
         if event.keysym == 'Left':
             print(self._images[self.position])
             self.position = self.position - 1
-            self.im = Image.open(self._images[self.position]).resize((1230,720), Image.ANTIALIAS)
+            self.im = Image.open(self._images[self.position]).resize((1280,720), Image.ANTIALIAS)
             self.canvas.image = ImageTk.PhotoImage(self.im)
             self.canvas.create_image(0, 0, image=self.canvas.image,anchor='nw')
             
 
     def save_image(self,event):
+        
         if event.keysym == 's':
             print('saveing coordinate with image name',self._images[self.position])
+            img = Image.open(self._images[self.position])
+            crop = img.crop((self.x0,self.y0,self.x1,self.y1))
+            crop.save('pedestrian/'+str(self.imgk)+'.png')
+            self.imgk = self.imgk + 1
             with open("a.csv","a") as file:
+
                 file.write(self._images[self.position])
                 file.write(",")
                 file.write(str(self.x0))
