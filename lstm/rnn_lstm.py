@@ -11,7 +11,7 @@ from keras.layers.core import Dense, Activation, Dropout
 from keras.layers.recurrent import LSTM
 from keras.utils.data_utils import get_file
 from keras.models import model_from_json
-
+from keras.utils import np_utils
 import operator as op
 
 import os
@@ -55,8 +55,8 @@ class mlp:
 		print("word_indices", type(self.word_indices), "length:",len(self.word_indices) )
 		print("indices_words", type(self.indices_word), "length", len(self.indices_word))
 
-		self.maxlen = 30
-		self.step = 3
+		self.maxlen = 4
+		self.step = 1
 		print("maxlen:",self.maxlen,"step:", self.step)
 		self.sentences = []
 		self.next_words = []
@@ -67,35 +67,58 @@ class mlp:
 		self.sentences2=[]
 		self.list_words=self.text.lower().split()#collecting the list of words
 		
-
+		# print(self.list_words[0+self.maxlen])
 		for i in range(0,len(self.list_words)-self.maxlen, self.step):
 			self.sentences2 = ' '.join(self.list_words[i: i + self.maxlen])
+			#print('^',self.sentences2,' : ' ,i+self.maxlen)#
 			self.sentences.append(self.sentences2)
 			self.next_words.append((self.list_words[i + self.maxlen]))
+			#print('=',self.list_words[i + self.maxlen])#
 		print('nb sequences(length of sentences):', len(self.sentences))
 		print("length of next_word",len(self.next_words))
 		#for 
 
-		print('Vectorization...')
-		self.X = np.zeros((len(self.sentences), self.maxlen, len(self.words)), dtype=np.bool)
-		self.y = np.zeros((len(self.sentences), len(self.words)), dtype=np.bool)
-		for i, sentence in enumerate(self.sentences):
-			for t, word in enumerate(sentence.split()):
-				print(t,word)
-				self.X[i, t, self.word_indices[word]] = 1
-			self.y[i, self.word_indices[self.next_words[i]]] = 1
-
-		#print(self.sentences)
-		#print('Y ',self.next_words)
+		self.X_T = []
+		self.X = np.zeros((self.maxlen,1))
+		self.y = np.zeros((len(self.sentences),1))
+		
+		for sentence in self.sentences:
+			i = 0
+			j = 0
+			for word in sentence.split():
+				#print(word)
+				#print(self.word_indices[word])
+				self.X[i][0] = self.word_indices[word]
+				i = i + 1
+			self.X_T.append(self.X)
+			self.y[j][0] = self.word_indices[word]
+			j = j + 1
+		self.y_train = np_utils.to_categorical(self.y)
+		print('shape of Y train : ',self.y_train.shape)
+		self.X_tt = np.asarray(self.X_T)
+		self.X_train = np.reshape(self.X_tt,(len(self.sentences),4,1))
+		print('Shape of input array : ',self.X_train.shape)
+		# print('Vectorization...')
+		# self.X = np.zeros((len(self.sentences), self.maxlen, len(self.words)), dtype=np.bool)
+		# self.y = np.zeros((len(self.sentences), len(self.words)), dtype=np.bool)
+		# for i, sentence in enumerate(self.sentences):
+			
+		# 	for t, word in enumerate(sentence.split()):
+		# 		#print(t,word)
+		# 		self.X[i, t, self.word_indices[word]] = 1
+		# 	self.y[i, self.word_indices[self.next_words[i]]] = 1
+			
+		# print(self.sentences)
+		# print('Y ',self.next_words)
 
 
 	def create_model(self):
 		self.model = Sequential()
-		self.model.add(LSTM(512, return_sequences=True, input_shape=(self.maxlen, len(self.words))))
+		self.model.add(LSTM(512, return_sequences=True, input_shape=(self.maxlen, 1)))
 		self.model.add(Dropout(0.2))
 		self.model.add(LSTM(512, return_sequences=False))
 		self.model.add(Dropout(0.2))
-		self.model.add(Dense(len(self.words)))
+		self.model.add(Dense(self.y_train.shape[1]))
 		#model.add(Dense(1000))
 		self.model.add(Activation('softmax'))
 
@@ -111,7 +134,7 @@ class mlp:
 		self.best_accuracy = 0.0
 		for iteration in range(0, self.no_epoch):
 			print('Iteration == ',iteration)
-			self.accuracy_measures = self.model.fit(self.X, self.y, batch_size=128, epochs=1)
+			self.accuracy_measures = self.model.fit(self.X_train, self.y_train, batch_size=128, epochs=1)
 			print(self.accuracy_measures.history.keys())
 		# 	self.iter_accuracy = op.itemgetter(0)(self.accuracy_measures.history['acc'])
 		# 	if (self.best_accuracy < self.iter_accuracy):
