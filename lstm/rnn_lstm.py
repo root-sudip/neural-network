@@ -39,10 +39,10 @@ class rnn:
 
 		print('corpus length:', len(self.text))
 
-		self.chars = set(self.text)
+		#self.chars = set(self.text)
 		self.words = set(open('got.txt').read().lower().split())
 
-		print("chars:",type(self.chars))
+		#print("chars:",type(self.chars))
 		print("words",type(self.words))
 		print("total number of unique words",len(self.words))
 		print("total number of unique chars", len(self.chars))
