@@ -24,9 +24,9 @@ from os import listdir
 import random
 
 
-class mlp:
+class rnn:
 	def __init__(self,no_epoch):
-		print('cnn ceated...')
+		print('......')
 		self.no_epoch = no_epoch
 
 		self.path = "got.txt"
@@ -98,36 +98,21 @@ class mlp:
 		self.X_tt = np.asarray(self.X_T)
 		self.X_train = np.reshape(self.X_tt,(len(self.sentences),4,1))
 		print('Shape of input array : ',self.X_train.shape)
-		# print('Vectorization...')
-		# self.X = np.zeros((len(self.sentences), self.maxlen, len(self.words)), dtype=np.bool)
-		# self.y = np.zeros((len(self.sentences), len(self.words)), dtype=np.bool)
-		# for i, sentence in enumerate(self.sentences):
-			
-		# 	for t, word in enumerate(sentence.split()):
-		# 		#print(t,word)
-		# 		self.X[i, t, self.word_indices[word]] = 1
-		# 	self.y[i, self.word_indices[self.next_words[i]]] = 1
-			
-		# print(self.sentences)
-		# print('Y ',self.next_words)
+		
 
 
 	def create_model(self):
 		self.model = Sequential()
 		self.model.add(LSTM(512, return_sequences=True, input_shape=(self.maxlen, 1)))
-		self.model.add(Dropout(0.2))
+
 		self.model.add(LSTM(512, return_sequences=False))
-		self.model.add(Dropout(0.2))
+
 		self.model.add(Dense(self.y_train.shape[1]))
 		#model.add(Dense(1000))
 		self.model.add(Activation('softmax'))
 
 		self.model.compile(loss='categorical_crossentropy', optimizer='rmsprop')
-	def sample(a, temperature=1.0):
-		# helper function to sample an index from a probability array
-		a = np.log(a) / temperature
-		a = np.exp(a) / np.sum(np.exp(a))
-		return np.argmax(np.random.multinomial(1, a, 1))
+	
 		
 	def train_model(self):
 
@@ -155,7 +140,7 @@ class mlp:
 		self.model = model_from_json(self.model)
 		self.model.load_weights("model_cnn.h5")
 
-	def test_model(self,filename,no_samples=None,label=None):
+	def test_model(self,filename=None,no_samples=None,label=None):
 
 		start_index = random.randint(0, len(self.list_words) - self.maxlen - 1)
 		sentence = self.list_words[start_index: start_index + self.maxlen]
@@ -189,12 +174,12 @@ def completer(text, state):
 readline.set_completer(completer)
 readline.parse_and_bind("tab: complete")
 
-ob = mlp(150)
+ob = rnn(150)
 
 if sys.argv[1] == 'test':
 	print('Trying to predict ...')
 	ob.load_model()
-	ob.test_model('image_0005.jpg',no_samples=1,label=42)
+	ob.test_model()
 elif sys.argv[1] == 'train':
 	#ob.load_data('101_ObjectCategories',samples=7496)
 	ob.create_model()
