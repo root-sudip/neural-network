@@ -83,7 +83,7 @@ class rnn:
 		self.X_T = []
 		self.X = np.zeros((self.maxlen,len(self.word_indices)))
 		self.y = np.zeros((len(self.sentences),len(self.word_indices)))
-		
+		print(self.word_indices)
 		j = 0
 		for sentence in self.sentences:
 			i = 0
@@ -91,13 +91,17 @@ class rnn:
 				#print(word)
 				#print(self.word_indices[word])
 				#label = self.word_indices
+				print(self.word_indices[word])
 				self.X[i][self.word_indices[word]] = 1
+				print(self.X[i,:])
 				i = i + 1
 			self.X_T.append(self.X)
+			x.fill(0)
 			#print(self.next_words[i])
 			self.y[j][self.word_indices[self.next_words[j]]] = 1
 			j = j + 1
-		
+		#print('& ',self.word_indices[0])
+		a
 		#self.y_train = np_utils.to_categorical(self.y)
 		#print('shape of Y train : ',self.y_train.shape)
 		self.X_tt = np.asarray(self.X_T)
@@ -111,9 +115,10 @@ class rnn:
 	def create_model(self):
 		self.model = Sequential()
 		self.model.add(LSTM(512, return_sequences=True, input_shape=(self.maxlen, len(self.word_indices))))
-
+		self.model.add(Dropout(0.2))
 		self.model.add(LSTM(512, return_sequences=False))
-
+		self.model.add(Dropout(0.2))
+		self.model.add(Dense(512))
 		self.model.add(Dense(self.y.shape[1]))
 		#model.add(Dense(1000))
 		self.model.add(Activation('softmax'))
@@ -152,14 +157,14 @@ class rnn:
 		start_index = random.randint(0, len(self.list_words) - self.maxlen - 1)
 		sentence = self.list_words[start_index: start_index + self.maxlen]
 		print('Sequence : ',sentence)
-		X_test = np.zeros((self.maxlen, 1))
+		X_test = np.zeros((self.maxlen, len(self.word_indices)))
 		
 		i = 0
 		for word in sentence:
-			X_test[i][0] = self.word_indices[word]												
+			X_test[i][self.word_indices[word]] = 1												
 			i = i + 1
-		X_test = np.reshape(X_test, (1, self.maxlen, 1))
-		X_test = np_utils.to_categorical(self.X_test)
+		X_test = np.reshape(X_test, (1, self.maxlen, len(self.word_indices)))
+		#X_test = np_utils.to_categorical(self.X_test)
 		print('X_test shape : ',X_test.shape)
 		# for t, word in enumerate(sentence):
 		# 	X_test[0, t, self.word_indices[word]] = 1.
