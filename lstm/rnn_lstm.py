@@ -42,10 +42,12 @@ class rnn:
 		#self.chars = set(self.text)
 		self.words = set(open('got.txt').read().lower().split())
 
+		# self.array = np.asarray
+
 		#print("chars:",type(self.chars))
 		print("words",type(self.words))
 		print("total number of unique words",len(self.words))
-		print("total number of unique chars", len(self.chars))
+		#print("total number of unique chars", len(self.chars))
 
 
 		self.word_indices = dict((c, i) for i, c in enumerate(self.words))
@@ -79,39 +81,44 @@ class rnn:
 		#for 
 
 		self.X_T = []
-		self.X = np.zeros((self.maxlen,1))
-		self.y = np.zeros((len(self.sentences),1))
+		self.X = np.zeros((self.maxlen,len(self.word_indices)))
+		self.y = np.zeros((len(self.sentences),len(self.word_indices)))
 		
+		j = 0
 		for sentence in self.sentences:
 			i = 0
-			j = 0
 			for word in sentence.split():
 				#print(word)
 				#print(self.word_indices[word])
-				self.X[i][0] = self.word_indices[word]
+				#label = self.word_indices
+				self.X[i][self.word_indices[word]] = 1
 				i = i + 1
 			self.X_T.append(self.X)
-			self.y[j][0] = self.word_indices[word]
+			#print(self.next_words[i])
+			self.y[j][self.word_indices[self.next_words[j]]] = 1
 			j = j + 1
-		self.y_train = np_utils.to_categorical(self.y)
-		print('shape of Y train : ',self.y_train.shape)
-		self.X_tt = np.asarray(self.X_T)
-		self.X_train = np.reshape(self.X_tt,(len(self.sentences),4,1))
-		print('Shape of input array : ',self.X_train.shape)
 		
+		#self.y_train = np_utils.to_categorical(self.y)
+		#print('shape of Y train : ',self.y_train.shape)
+		self.X_tt = np.asarray(self.X_T)
+		#print('before x ',self.X_tt.shape)
+		self.X_train = np.reshape(self.X_tt,(len(self.sentences),4,len(self.word_indices)))
+		#self.X_train = np_utils.to_categorical(self.X_tt)
+		print('X train shape : ',self.X_train.shape)
+		print('Y train shape : ',self.y.shape)		
 
 
 	def create_model(self):
 		self.model = Sequential()
-		self.model.add(LSTM(512, return_sequences=True, input_shape=(self.maxlen, 1)))
+		self.model.add(LSTM(512, return_sequences=True, input_shape=(self.maxlen, len(self.word_indices))))
 
 		self.model.add(LSTM(512, return_sequences=False))
 
-		self.model.add(Dense(self.y_train.shape[1]))
+		self.model.add(Dense(self.y.shape[1]))
 		#model.add(Dense(1000))
 		self.model.add(Activation('softmax'))
 
-		self.model.compile(loss='categorical_crossentropy', optimizer='rmsprop')
+		self.model.compile(loss='categorical_crossentropy', optimizer='rmsprop',metrics=["accuracy"])
 	
 		
 	def train_model(self):
@@ -119,13 +126,13 @@ class rnn:
 		self.best_accuracy = 0.0
 		for iteration in range(0, self.no_epoch):
 			print('Iteration == ',iteration)
-			self.accuracy_measures = self.model.fit(self.X_train, self.y_train, batch_size=128, epochs=1)
+			self.accuracy_measures = self.model.fit(self.X_train, self.y, batch_size=128, epochs=1)
 			print(self.accuracy_measures.history.keys())
-		# 	self.iter_accuracy = op.itemgetter(0)(self.accuracy_measures.history['acc'])
-		# 	if (self.best_accuracy < self.iter_accuracy):
-		# 		self.best_accuracy = self.iter_accuracy
-		# 	self.save_model()
-		# print('After Interation best accuracy is : ',self.best_accuracy)	
+			self.iter_accuracy = op.itemgetter(0)(self.accuracy_measures.history['acc'])
+			if (self.best_accuracy < self.iter_accuracy):
+				self.best_accuracy = self.iter_accuracy
+			self.save_model()
+		print('After Interation best accuracy is : ',self.best_accuracy)	
 
 	def save_model(self):
 		model_json = self.model.to_json()
@@ -152,6 +159,8 @@ class rnn:
 			X_test[i][0] = self.word_indices[word]												
 			i = i + 1
 		X_test = np.reshape(X_test, (1, self.maxlen, 1))
+		X_test = np_utils.to_categorical(self.X_test)
+		print('X_test shape : ',X_test.shape)
 		# for t, word in enumerate(sentence):
 		# 	X_test[0, t, self.word_indices[word]] = 1.
 		preds = self.model.predict(X_test, verbose=0)
