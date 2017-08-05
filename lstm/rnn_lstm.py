@@ -69,13 +69,13 @@ class rnn:
 		self.sentences2=[]
 		self.list_words=self.text.lower().split()#collecting the list of words
 		
-		# print(self.list_words[0+self.maxlen])
+
 		for i in range(0,len(self.list_words)-self.maxlen, self.step):
 			self.sentences2 = ' '.join(self.list_words[i: i + self.maxlen])
 			#print('^',self.sentences2,' : ' ,i+self.maxlen)#
 			self.sentences.append(self.sentences2)
 			self.next_words.append((self.list_words[i + self.maxlen]))
-			#print('=',self.list_words[i + self.maxlen])#
+
 		print('nb sequences(length of sentences):', len(self.sentences))
 		print("length of next_word",len(self.next_words))
 		#for 
@@ -88,26 +88,16 @@ class rnn:
 		for sentence in self.sentences:
 			i = 0
 			for word in sentence.split():
-				#print(word)
-				#print(self.word_indices[word])
-				#label = self.word_indices
-				#print(self.word_indices[word])
 				self.X[i][self.word_indices[word]] = 1
-				#print(self.X[i,:])
 				i = i + 1
 			self.X_T.append(self.X)
 			self.X.fill(0)
-			#print(self.next_words[i])
 			self.y[j][self.word_indices[self.next_words[j]]] = 1
 			j = j + 1
-		#print('& ',self.word_indices[0])
-		
-		#self.y_train = np_utils.to_categorical(self.y)
-		#print('shape of Y train : ',self.y_train.shape)
+
 		self.X_tt = np.asarray(self.X_T)
-		#print('before x ',self.X_tt.shape)
 		self.X_train = np.reshape(self.X_tt,(len(self.sentences),4,len(self.word_indices)))
-		#self.X_train = np_utils.to_categorical(self.X_tt)
+
 		print('X train shape : ',self.X_train.shape)
 		print('Y train shape : ',self.y.shape)		
 
@@ -164,17 +154,13 @@ class rnn:
 			X_test[i][self.word_indices[word]] = 1												
 			i = i + 1
 		X_test = np.reshape(X_test, (1, self.maxlen, len(self.word_indices)))
-		#X_test = np_utils.to_categorical(self.X_test)
+
 		print('X_test shape : ',X_test.shape)
-		# for t, word in enumerate(sentence):
-		# 	X_test[0, t, self.word_indices[word]] = 1.
+
 		preds = self.model.predict(X_test, verbose=0)
 		print('Confidence value : ',preds)
 		next_index = np.argmax(preds)
-		#next_index = sample(preds, diversity)
 		next_word = self.indices_word[next_index]
-		#generated += next_word
-		#generated += ' '.join(sentence)
 		print('generated text : ',next_word)
 
 def completer(text, state):
@@ -195,7 +181,6 @@ if sys.argv[1] == 'test':
 	ob.load_model()
 	ob.test_model()
 elif sys.argv[1] == 'train':
-	#ob.load_data('101_ObjectCategories',samples=7496)
 	ob.create_model()
 	ob.train_model()
 	ob.save_model()
@@ -203,21 +188,3 @@ else:
 	print('You should write the argv parameters.')
 
 
-
-# sub dir : =>  accordion Number of Image =>  49 label =>  0
-# sub dir : =>  butterfly Number of Image =>  86 label =>  1
-# sub dir : =>  brain Number of Image =>  84 label =>  2
-# sub dir : =>  camera Number of Image =>  47 label =>  3
-# sub dir : =>  bass Number of Image =>  50 label =>  4
-# sub dir : =>  buddha Number of Image =>  81 label =>  5
-# sub dir : =>  beaver Number of Image =>  45 label =>  6
-# sub dir : =>  binocular Number of Image =>  32 label =>  7
-# sub dir : =>  cellphone Number of Image =>  58 label =>  8
-# sub dir : =>  barrel Number of Image =>  45 label =>  9
-# sub dir : =>  brontosaurus Number of Image =>  38 label =>  10
-# sub dir : =>  cannon Number of Image =>  40 label =>  11
-# sub dir : =>  anchor Number of Image =>  41 label =>  12
-# sub dir : =>  chair Number of Image =>  61 label =>  13
-# sub dir : =>  bonsai Number of Image =>  128 label =>  14
-# sub dir : =>  ceiling_fan Number of Image =>  45 label =>  15
-# sub dir : =>  ant Number of Image =>  34 label =>  16
