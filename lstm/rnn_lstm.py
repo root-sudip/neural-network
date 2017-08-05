@@ -109,7 +109,7 @@ class rnn:
 		# self.model.add(LSTM(70, return_sequences=True))
 		# self.model.add(LSTM(100,return_sequences=True))
 		#self.model.add(Dropout(0.2))
-		self.model.add(Dense(512))
+		#self.model.add(Dense(512))
 		#self.model.add(Activation('sigmoid'))
 		#self.model.add(Dropout(0.2))
 		self.model.add(LSTM(512, return_sequences=False))
