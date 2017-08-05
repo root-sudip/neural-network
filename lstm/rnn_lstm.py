@@ -83,7 +83,7 @@ class rnn:
 		self.X_T = []
 		self.X = np.zeros((self.maxlen,len(self.word_indices)))
 		self.y = np.zeros((len(self.sentences),len(self.word_indices)))
-		print(self.word_indices)
+		#print(self.word_indices)
 		j = 0
 		for sentence in self.sentences:
 			i = 0
@@ -91,12 +91,12 @@ class rnn:
 				#print(word)
 				#print(self.word_indices[word])
 				#label = self.word_indices
-				print(self.word_indices[word])
+				#print(self.word_indices[word])
 				self.X[i][self.word_indices[word]] = 1
-				print(self.X[i,:])
+				#print(self.X[i,:])
 				i = i + 1
 			self.X_T.append(self.X)
-			x.fill(0)
+			self.X.fill(0)
 			#print(self.next_words[i])
 			self.y[j][self.word_indices[self.next_words[j]]] = 1
 			j = j + 1
@@ -169,7 +169,7 @@ class rnn:
 		# for t, word in enumerate(sentence):
 		# 	X_test[0, t, self.word_indices[word]] = 1.
 		preds = self.model.predict(X_test, verbose=0)
-		#print('Confidence value : ',preds)
+		print('Confidence value : ',preds)
 		next_index = np.argmax(preds)
 		#next_index = sample(preds, diversity)
 		next_word = self.indices_word[next_index]
