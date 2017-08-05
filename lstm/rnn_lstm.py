@@ -101,7 +101,7 @@ class rnn:
 			self.y[j][self.word_indices[self.next_words[j]]] = 1
 			j = j + 1
 		#print('& ',self.word_indices[0])
-		a
+		
 		#self.y_train = np_utils.to_categorical(self.y)
 		#print('shape of Y train : ',self.y_train.shape)
 		self.X_tt = np.asarray(self.X_T)
