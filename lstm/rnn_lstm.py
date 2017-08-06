@@ -91,6 +91,7 @@ class rnn:
 				self.X[i][self.word_indices[word]] = 1
 				i = i + 1
 			self.X_T.append(self.X)
+			#print(': ',self.X)
 			self.X.fill(0)
 			self.y[j][self.word_indices[self.next_words[j]]] = 1
 			j = j + 1
@@ -104,19 +105,15 @@ class rnn:
 
 	def create_model(self):
 		self.model = Sequential()
-		self.model.add(LSTM(512, return_sequences=True, input_shape=(self.maxlen, len(self.word_indices))))
-		#self.model.add(Dropout(0.2))
-		# self.model.add(LSTM(70, return_sequences=True))
-		# self.model.add(LSTM(100,return_sequences=True))
-		#self.model.add(Dropout(0.2))
-		#self.model.add(Dense(512))
-		#self.model.add(Activation('sigmoid'))
-		#self.model.add(Dropout(0.2))
-		self.model.add(LSTM(512, return_sequences=False))
-		#self.model.add(Dropout(0.2))
-		#self.model.add(Dense(512))
+		self.model.add(LSTM(256, return_sequences=True, input_shape=(self.maxlen, len(self.word_indices))))
+		self.model.add(Dropout(0.5))
+		self.model.add(Activation('sigmoid'))
+
+		self.model.add(LSTM(256, return_sequences=True))
+		self.model.add(Dropout(0.5))
+		self.model.add(LSTM(256, return_sequences=False))
+
 		self.model.add(Dense(self.y.shape[1]))
-		#model.add(Dense(1000))
 		self.model.add(Activation('softmax'))
 
 		self.model.compile(loss='categorical_crossentropy', optimizer='sgd',metrics=["accuracy"])
@@ -164,8 +161,9 @@ class rnn:
 		print('X_test shape : ',X_test.shape)
 
 		preds = self.model.predict(X_test, verbose=0)[0]
-		#print('Confidence value : ',preds)
+		print(self.word_indices)
 		next_index = np.argmax(preds)
+		print('Confidence value : ',next_index)
 		next_word = self.indices_word[next_index]
 		print('generated text : ',next_word)
 
