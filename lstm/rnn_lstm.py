@@ -47,72 +47,101 @@ class rnn:
 		#print("chars:",type(self.chars))
 		print("words",type(self.words))
 		print("total number of unique words",len(self.words))
-		#print("total number of unique chars", len(self.chars))
+		# #print("total number of unique chars", len(self.chars))
 
 
-		self.word_indices = dict((c, i) for i, c in enumerate(self.words))
-		self.indices_word = dict((i, c) for i, c in enumerate(self.words))
-
-
-		print("word_indices", type(self.word_indices), "length:",len(self.word_indices) )
-		print("indices_words", type(self.indices_word), "length", len(self.indices_word))
-
-		self.maxlen = 4
-		self.step = 1
-		print("maxlen:",self.maxlen,"step:", self.step)
-		self.sentences = []
-		self.next_words = []
-		self.next_words= []
-		self.sentences1 = []
-		self.list_words = []
-
-		self.sentences2=[]
-		self.list_words=self.text.lower().split()#collecting the list of words
+		self.word_len = len(words)
 		
 
-		for i in range(0,len(self.list_words)-self.maxlen, self.step):
-			self.sentences2 = ' '.join(self.list_words[i: i + self.maxlen])
-			#print('^',self.sentences2,' : ' ,i+self.maxlen)#
-			self.sentences.append(self.sentences2)
-			self.next_words.append((self.list_words[i + self.maxlen]))
+		#print(self.word_len)
+		# print("word_len", type(self.word_len), "length:",len(self.word_len) )
+		# print("indices_words", type(self.indices_word), "length", len(self.indices_word))
+		# with open("lstm_label.csv","a") as file:
+		# 	l = 0 
+		# 	for i in self.words:
+		# 		file.write(str(l))
+		# 		file.write(',')
+		# 		file.write(i)
+		# 		file.write('\n')
+		# 		l = l + 1
+		# 	file.close()
 
-		print('nb sequences(length of sentences):', len(self.sentences))
-		print("length of next_word",len(self.next_words))
-		#for 
+		def load_data():
+			self.maxlen = 4
+			self.step = 1
+			print("maxlen:",self.maxlen,"step:", self.step)
+			self.sentences = []
+			self.next_words = []
+			self.next_words= []
+			self.sentences1 = []
+			self.list_words = []
 
-		self.X_T = []
-		self.X = np.zeros((self.maxlen,len(self.word_indices)))
-		self.y = np.zeros((len(self.sentences),len(self.word_indices)))
-		#print(self.word_indices)
-		j = 0
-		for sentence in self.sentences:
-			i = 0
-			for word in sentence.split():
-				self.X[i][self.word_indices[word]] = 1
-				i = i + 1
-			self.X_T.append(self.X)
-			#print(': ',self.X)
-			self.X.fill(0)
-			self.y[j][self.word_indices[self.next_words[j]]] = 1
-			j = j + 1
+			self.sentences2=[]
+			self.list_words=self.text.lower().split()#collecting the list of words
+		
 
-		self.X_tt = np.asarray(self.X_T)
-		self.X_train = np.reshape(self.X_tt,(len(self.sentences),4,len(self.word_indices)))
+			for i in range(0,len(self.list_words)-self.maxlen, self.step):
+				self.sentences2 = ' '.join(self.list_words[i: i + self.maxlen])
+				#print('^',self.sentences2,' : ' ,i+self.maxlen)#
+				self.sentences.append(self.sentences2)
+				self.next_words.append((self.list_words[i + self.maxlen]))
 
-		print('X train shape : ',self.X_train.shape)
-		print('Y train shape : ',self.y.shape)		
+			print('nb sequences(length of sentences):', len(self.sentences))
+			print("length of next_word",len(self.next_words))
+
+			self.X_T = []
+			self.X = np.zeros((self.maxlen,len(self.word_len)))
+			self.y = np.zeros((len(self.sentences),len(self.word_len)))
+			#print(self.word_len)
+			j = 0
+			for sentence in self.sentences:
+				i = 0
+				for word in sentence.split():
+					#print(word)
+					with open("lstm_label.csv") as fd1:
+						csv_reader = csv.reader(fd1)
+						for ww in csv_reader:
+							if ww[1] == word:
+								l_word1 = int(ww[0])
+								break
+						fd1.close()
+					self.X[i][l_word1] = 1
+					#print(self.X[i,:])
+					i = i + 1
+				self.X_T.append(self.X)
+				#print(': ',self.X)
+				self.X.fill(0)
+				with open("lstm_label.csv") as fd2:
+					csv_reader = csv.reader(fd2)
+					for ww in csv_reader:
+						if ww[1] ==self.next_words[j]:
+							l_word2 =int(ww[0])
+							break
+					self.y[j][l_word2] = 1
+					fd2.close()	
+				j = j + 1
+
+
+			self.X_tt = np.asarray(self.X_T)
+			self.X_train = np.reshape(self.X_tt,(len(self.sentences),4,len(self.word_len)))
+
+			print('X train shape : ',self.X_train.shape)
+			print('Y train shape : ',self.y.shape)		
 
 
 	def create_model(self):
 		self.model = Sequential()
-		self.model.add(LSTM(256, return_sequences=True, input_shape=(self.maxlen, len(self.word_indices))))
-		self.model.add(Dropout(0.5))
-		self.model.add(Activation('sigmoid'))
-
-		self.model.add(LSTM(256, return_sequences=True))
-		self.model.add(Dropout(0.5))
-		self.model.add(LSTM(256, return_sequences=False))
-
+		self.model.add(LSTM(64, return_sequences=True, input_shape=(self.maxlen, len(self.word_len))))
+		#self.model.add(Dropout(0.2))
+		# self.model.add(LSTM(256, return_sequences=True))
+		# self.model.add(Dropout(0.2))
+		# self.model.add(Activation('sigmoid'))
+		# self.model.add(LSTM(256, return_sequences=True))
+		# self.model.add(Dropout(0.2))
+		# self.model.add(Activation('sigmoid'))
+		self.model.add(LSTM(128, return_sequences=False))
+		# self.model.add(Dropout(0.2))
+		self.model.add(Dropout(0.2))
 		self.model.add(Dense(self.y.shape[1]))
 		self.model.add(Activation('softmax'))
 
@@ -150,22 +179,45 @@ class rnn:
 		start_index = random.randint(0, len(self.list_words) - self.maxlen - 1)
 		sentence = self.list_words[start_index: start_index + self.maxlen]
 		print('Sequence : ',sentence)
-		X_test = np.zeros((self.maxlen, len(self.word_indices)))
+		X_test = np.zeros((self.maxlen, len(self.word_len)))
 		
 		i = 0
 		for word in sentence:
-			X_test[i][self.word_indices[word]] = 1												
+			#print(word)
+			with open("lstm_label.csv") as fd3:
+				csv_reader = csv.reader(fd3)
+				for ww in csv_reader:
+					if ww[1] == word:
+						print(ww[1],' : ',word)
+						l_word3 =int(ww[0])
+						break
+				fd3.close()
+			print(l_word3)
+			X_test[i][l_word3] = 1	
+			#print(X_test[i,:])											
 			i = i + 1
-		X_test = np.reshape(X_test, (1, self.maxlen, len(self.word_indices)))
-
+		X_test = np.reshape(X_test, (1, self.maxlen, len(self.word_len)))
+		#np.savetxt('matrix.txt',X_test,fmt="%d")
 		print('X_test shape : ',X_test.shape)
 
-		preds = self.model.predict(X_test, verbose=0)[0]
-		print(self.word_indices)
+		preds = self.model.predict(X_test, verbose=0)
+		#print(self.word_len)cat ls
 		next_index = np.argmax(preds)
 		print('Confidence value : ',next_index)
-		next_word = self.indices_word[next_index]
-		print('generated text : ',next_word)
+		word2l = ''
+		with open("lstm_label.csv") as fd4:
+			csv_reader = csv.reader(fd4)
+			for ww in csv_reader:
+				if ww[0] == next_index:
+					word2l =ww[1]
+					break
+			fd4.close()
+		
+		#next_word = self.indices_word[word2l]
+		print('generated text : ',word2l)
+
+			
+		
 
 def completer(text, state):
 	options = [x for x in listdir('.') if x.startswith(text)]
