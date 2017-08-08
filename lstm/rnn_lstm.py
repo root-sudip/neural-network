@@ -1,10 +1,9 @@
 from __future__ import print_function
 import numpy as np
 import pandas
-
 import pandas as pd
+
 import csv
-#from sklearn.datasets import load_iris
 
 from keras.models import Sequential
 from keras.layers.core import Dense, Activation, Dropout
@@ -12,6 +11,7 @@ from keras.layers.recurrent import LSTM
 from keras.utils.data_utils import get_file
 from keras.models import model_from_json
 from keras.utils import np_utils
+
 import operator as op
 
 import os
