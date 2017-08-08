@@ -67,68 +67,68 @@ class rnn:
 		# 		l = l + 1
 		# 	file.close()
 
-		def load_data(self):
-			print('Loading data ...')
-			self.maxlen = 4
-			self.step = 1
-			print("maxlen:",self.maxlen,"step:", self.step)
-			self.sentences = []
-			self.next_words = []
-			self.next_words= []
-			self.sentences1 = []
-			self.list_words = []
+	def load_data(self):
+		print('Loading data ...')
+		self.maxlen = 4
+		self.step = 1
+		print("maxlen:",self.maxlen,"step:", self.step)
+		self.sentences = []
+		self.next_words = []
+		self.next_words= []
+		self.sentences1 = []
+		self.list_words = []
 
-			# self.sentences2 = []
-			self.list_words = self.text.lower().split()#collecting the list of words
+		# self.sentences2 = []
+		self.list_words = self.text.lower().split()#collecting the list of words
 		
 
-			for i in range(0,len(self.list_words)-self.maxlen, self.step):
-				self.sentences2 = ' '.join(self.list_words[i: i + self.maxlen])
-				#print('^',self.sentences2,' : ' ,i+self.maxlen)#
-				self.sentences.append(self.sentences2)
-				self.next_words.append((self.list_words[i + self.maxlen]))
+		for i in range(0,len(self.list_words)-self.maxlen, self.step):
+			self.sentences2 = ' '.join(self.list_words[i: i + self.maxlen])
+			#print('^',self.sentences2,' : ' ,i+self.maxlen)#
+			self.sentences.append(self.sentences2)
+			self.next_words.append((self.list_words[i + self.maxlen]))
 
-			print('nb sequences(length of sentences):', len(self.sentences))
-			print("length of next_word",len(self.next_words))
+		print('nb sequences(length of sentences):', len(self.sentences))
+		print("length of next_word",len(self.next_words))
 
-			self.X_T = []
-			self.X = np.zeros((self.maxlen,len(self.word_len)))
-			self.y = np.zeros((len(self.sentences),len(self.word_len)))
-			#print(self.word_len)
-			j = 0
-			for sentence in self.sentences:
-				i = 0
-				for word in sentence.split():
-					#print(word)
-					with open("lstm_label.csv") as fd1:
-						csv_reader = csv.reader(fd1)
-						for ww in csv_reader:
-							if ww[1] == word:
-								l_word1 = int(ww[0])
-								break
-						fd1.close()
-					self.X[i][l_word1] = 1
-					#print(self.X[i,:])
-					i = i + 1
-				self.X_T.append(self.X)
-				#print(': ',self.X)
-				self.X.fill(0)
-				with open("lstm_label.csv") as fd2:
-					csv_reader = csv.reader(fd2)
+		self.X_T = []
+		self.X = np.zeros((self.maxlen,len(self.word_len)))
+		self.y = np.zeros((len(self.sentences),len(self.word_len)))
+		#print(self.word_len)
+		j = 0
+		for sentence in self.sentences:
+			i = 0
+			for word in sentence.split():
+				#print(word)
+				with open("lstm_label.csv") as fd1:
+					csv_reader = csv.reader(fd1)
 					for ww in csv_reader:
-						if ww[1] ==self.next_words[j]:
-							l_word2 =int(ww[0])
+						if ww[1] == word:
+							l_word1 = int(ww[0])
 							break
-					self.y[j][l_word2] = 1
-					fd2.close()	
-				j = j + 1
+					fd1.close()
+				self.X[i][l_word1] = 1
+				#print(self.X[i,:])
+				i = i + 1
+			self.X_T.append(self.X)
+			#print(': ',self.X)
+			self.X.fill(0)
+			with open("lstm_label.csv") as fd2:
+				csv_reader = csv.reader(fd2)
+				for ww in csv_reader:
+					if ww[1] ==self.next_words[j]:
+						l_word2 =int(ww[0])
+						break
+				self.y[j][l_word2] = 1
+				fd2.close()	
+			j = j + 1
 
 
-			self.X_tt = np.asarray(self.X_T)
-			self.X_train = np.reshape(self.X_tt,(len(self.sentences),4,self.word_len))
+		self.X_tt = np.asarray(self.X_T)
+		self.X_train = np.reshape(self.X_tt,(len(self.sentences),4,self.word_len))
 
-			print('X train shape : ',self.X_train.shape)
-			print('Y train shape : ',self.y.shape)		
+		print('X train shape : ',self.X_train.shape)
+		print('Y train shape : ',self.y.shape)		
 
 
 	def create_model(self):
@@ -242,6 +242,7 @@ if sys.argv[1] == 'test':
 	ob.load_model()
 	ob.test_model()
 elif sys.argv[1] == 'train':
+	ob.load_data()
 	ob.create_model()
 	ob.train_model()
 	ob.save_model()
