@@ -38,20 +38,14 @@ class rnn:
 			import codecs
 			self.text = codecs.open(path, encoding='utf-8').read().lower().replace(',','').replace('"','')
 			print(self.text)
-		#self.text = self.textt.strip(',')
 
 		print('corpus length:', len(self.text))
-
-		#self.chars = set(self.text)
 		
 		self.words = set(open('got.txt').read().replace(',','').replace('"','').lower().split())
 
-		# self.array = np.asarray
-
-		#print("chars:",type(self.chars))
 		print("words",type(self.words))
 		print("total number of unique words",len(self.words))
-		# #print("total number of unique chars", len(self.chars))
+
 
 
 		self.word_len = len(self.words)
@@ -78,23 +72,15 @@ class rnn:
 		print("maxlen:",self.maxlen,"step:", self.step)
 		self.sentences = []
 		self.next_words = []
-		#self.next_words= []
-		#self.sentences1 = []
-		self.list_words = []#list of word from corpus
 
-		# self.sentences2 = []
+		self.list_words = []#list of word from corpus
 		self.list_words = self.text.lower().split()#collecting the list of words
 		
 
 		for i in range(0,len(self.list_words)-self.maxlen, self.step):
-			#print(self.list_words[i:i+self.maxlen])
+
 			self.sentences.append(' '.join(self.list_words[i:i+self.maxlen]))
-			#self.sentences2 = ' '.join(self.list_words[i: i + self.maxlen])
-			#print('^',self.sentences2,' : ' ,i+self.maxlen)#
-			#self.sentences.append(self.sentences2)
-			#self.next_words.append((self.list_words[i + self.maxlen]))
-			#print('Printing the list of sentances ...')''.join
-			#print(self.sentences)
+
 			self.next_words.append(self.list_words[i+self.maxlen])
 
 		print('nb sequences(length of sentences):', len(self.sentences))
@@ -103,7 +89,6 @@ class rnn:
 		self.X_T = []
 		self.X = np.zeros((self.maxlen,self.word_len))
 		self.y = np.zeros((len(self.sentences),self.word_len))
-		#print(self.word_len)
 		j = 0
 		f = open("ro.txt","a")
 		for sentence in self.sentences:
@@ -115,11 +100,9 @@ class rnn:
 			f.write('\n')
 			
 			for word in sentence.split():
-				#print(word)
 				with open("lstm_label.csv") as fd1:
 					csv_reader = csv.reader(fd1)
 					for ww in csv_reader:
-						#print(ww[1],':',word)
 						if ww[1] == word:
 							print('^',ww[1])
 							l_word1 = int(ww[0])
@@ -132,10 +115,10 @@ class rnn:
 				f.write('\n')
 				f.write(word)
 				f.write('\n')
-				#print(self.X[i,:])
+
 				i = i + 1
 			self.X_T.append(self.X)
-			#print(': ',self.X)
+
 			self.X.fill(0)
 			f.write('Target :')
 			
@@ -171,7 +154,7 @@ class rnn:
 		self.model.add(LSTM(64, return_sequences=True, input_shape=(self.maxlen, self.word_len)))
 
 		self.model.add(LSTM(128, return_sequences=False))
-		# self.model.add(Dropout(0.2))
+
 		self.model.add(Dropout(0.2))
 		self.model.add(Dense(self.y.shape[1]))
 		self.model.add(Activation('softmax'))
@@ -214,7 +197,7 @@ class rnn:
 		X_test = np.zeros((self.maxlen, self.word_len))	
 		i = 0
 		for word in sentence:
-			#print(word)
+
 			with open("lstm_label.csv") as fd3:
 				csv_reader = csv.reader(fd3)
 				for ww in csv_reader:
@@ -225,14 +208,11 @@ class rnn:
 				fd3.close()
 			print(l_word3)
 			X_test[i][l_word3] = 1	
-			#print(X_test[i,:])											
+										
 			i = i + 1
 		X_test = np.reshape(X_test, (1, self.maxlen, self.word_len))
-		#np.savetxt('matrix.txt',X_test,fmt="%d")
 		print('X_test shape : ',X_test.shape)
-
 		preds = self.model.predict(X_test, verbose=0)
-		#print(self.word_len)cat ls
 		next_index = np.argmax(preds)
 		print('Confidence value : ',next_index)
 		word2l = ''
@@ -243,7 +223,7 @@ class rnn:
 					word2l =ww[1]
 					break
 			fd4.close()	
-		#next_word = self.indices_word[word2l]
+
 		print('generated text : ',word2l)
 
 def completer(text, state):
