@@ -74,19 +74,24 @@ class rnn:
 		print("maxlen:",self.maxlen,"step:", self.step)
 		self.sentences = []
 		self.next_words = []
-		self.next_words= []
+		#self.next_words= []
 		self.sentences1 = []
-		self.list_words = []
+		self.list_words = []#list of word from corpus
 
 		# self.sentences2 = []
 		self.list_words = self.text.lower().split()#collecting the list of words
 		
 
 		for i in range(0,len(self.list_words)-self.maxlen, self.step):
-			self.sentences2 = ' '.join(self.list_words[i: i + self.maxlen])
+			#print(self.list_words[i:i+self.maxlen])
+			self.sentences.append(' '.join(self.list_words[i:i+self.maxlen]))
+			#self.sentences2 = ' '.join(self.list_words[i: i + self.maxlen])
 			#print('^',self.sentences2,' : ' ,i+self.maxlen)#
-			self.sentences.append(self.sentences2)
-			self.next_words.append((self.list_words[i + self.maxlen]))
+			#self.sentences.append(self.sentences2)
+			#self.next_words.append((self.list_words[i + self.maxlen]))
+			#print('Printing the list of sentances ...')''.join
+			#print(self.sentences)
+			self.next_words.append(self.list_words[i+self.maxlen])
 
 		print('nb sequences(length of sentences):', len(self.sentences))
 		print("length of next_word",len(self.next_words))
@@ -96,8 +101,14 @@ class rnn:
 		self.y = np.zeros((len(self.sentences),self.word_len))
 		#print(self.word_len)
 		j = 0
+		f = open("ro.txt","a")
 		for sentence in self.sentences:
+			print(sentence)
 			i = 0
+			f.write('{')
+			f.write('\n')
+			f.write('Input :')
+			f.write('\n')
 			for word in sentence.split():
 				#print(word)
 				with open("lstm_label.csv") as fd1:
@@ -108,11 +119,17 @@ class rnn:
 							break
 					fd1.close()
 				self.X[i][l_word1] = 1
+				
+				f.write(str(self.X[i,:]))
+				f.write('\n')
+				f.write(word)
+				f.write('\n')
 				#print(self.X[i,:])
 				i = i + 1
 			self.X_T.append(self.X)
 			#print(': ',self.X)
 			self.X.fill(0)
+			f.write('Target :')
 			with open("lstm_label.csv") as fd2:
 				csv_reader = csv.reader(fd2)
 				for ww in csv_reader:
@@ -120,10 +137,17 @@ class rnn:
 						l_word2 =int(ww[0])
 						break
 				self.y[j][l_word2] = 1
+				
+				f.write(str(self.y[j,:]))
+				f.write('\n')
+				f.write(self.next_words[j])
+				f.write('\n')
+				
 				fd2.close()	
+			f.write('}')
 			j = j + 1
 
-
+		f.close()
 		self.X_tt = np.asarray(self.X_T)
 		self.X_train = np.reshape(self.X_tt,(len(self.sentences),4,self.word_len))
 
@@ -243,9 +267,9 @@ if sys.argv[1] == 'test':
 	ob.test_model()
 elif sys.argv[1] == 'train':
 	ob.load_data()
-	ob.create_model()
-	ob.train_model()
-	ob.save_model()
+	#ob.create_model()
+	#ob.train_model()
+	#ob.save_model()
 else:
 	print('You should write the argv parameters.')
 
