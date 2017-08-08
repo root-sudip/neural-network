@@ -115,7 +115,8 @@ class rnn:
 				with open("lstm_label.csv") as fd1:
 					csv_reader = csv.reader(fd1)
 					for ww in csv_reader:
-						if ww[1] is word:
+						if ww[1] == word:
+							print('^',ww[1])
 							l_word1 = int(ww[0])
 							print(l_word1)
 							self.X[i][l_word1] = 1
@@ -137,7 +138,8 @@ class rnn:
 			with open("lstm_label.csv") as fd2:
 				csv_reader = csv.reader(fd2)
 				for ww in csv_reader:
-					if ww[1] is self.next_words[j]:
+					if ww[1] == self.next_words[j]:
+						#
 						l_word2 =int(ww[0])
 						self.y[j][l_word2] = 1
 						break

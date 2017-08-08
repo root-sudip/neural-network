@@ -11,7 +11,7 @@ def main():
     #img = skimage.data.astronaut()
     #print(img.shape)
 
-    img = np.asarray(Image.open('set00_V001_992.png'))
+    img = np.asarray(Image.open('000133.jpg'))
 
     # perform selective search
     img_lbl, regions = selective_search(img, scale=500, sigma=0.9, min_size=10)
