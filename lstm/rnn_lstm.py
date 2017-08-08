@@ -265,9 +265,9 @@ if sys.argv[1] == 'test':
 	ob.test_model()
 elif sys.argv[1] == 'train':
 	ob.load_data()
-	#ob.create_model()
-	#ob.train_model()
-	#ob.save_model()
+	ob.create_model()
+	ob.train_model()
+	ob.save_model()
 else:
 	print('You should write the argv parameters.')
 
