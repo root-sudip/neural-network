@@ -92,8 +92,8 @@ class rnn:
 		print("length of next_word",len(self.next_words))
 
 		self.X_T = []
-		self.X = np.zeros((self.maxlen,len(self.word_len)))
-		self.y = np.zeros((len(self.sentences),len(self.word_len)))
+		self.X = np.zeros((self.maxlen,self.word_len))
+		self.y = np.zeros((len(self.sentences),self.word_len))
 		#print(self.word_len)
 		j = 0
 		for sentence in self.sentences:
