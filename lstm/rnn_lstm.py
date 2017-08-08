@@ -51,7 +51,8 @@ class rnn:
 
 
 		self.word_len = len(self.words)
-		
+		self.maxlen = 4
+		self.step = 1
 
 		#print(self.word_len)
 		# print("word_len", type(self.word_len), "length:",len(self.word_len) )
@@ -66,7 +67,7 @@ class rnn:
 		# 		l = l + 1
 		# 	file.close()
 
-		def load_data():
+		def load_data(self):
 			print('Loading data ...')
 			self.maxlen = 4
 			self.step = 1
@@ -124,7 +125,7 @@ class rnn:
 
 
 			self.X_tt = np.asarray(self.X_T)
-			self.X_train = np.reshape(self.X_tt,(len(self.sentences),4,len(self.word_len)))
+			self.X_train = np.reshape(self.X_tt,(len(self.sentences),4,self.word_len))
 
 			print('X train shape : ',self.X_train.shape)
 			print('Y train shape : ',self.y.shape)		
@@ -133,7 +134,7 @@ class rnn:
 	def create_model(self):
 		print('Initializing model ...')
 		self.model = Sequential()
-		self.model.add(LSTM(64, return_sequences=True, input_shape=(self.maxlen, len(self.word_len))))
+		self.model.add(LSTM(64, return_sequences=True, input_shape=(self.maxlen, self.word_len)))
 		#self.model.add(Dropout(0.2))
 		# self.model.add(LSTM(256, return_sequences=True))
 		# self.model.add(Dropout(0.2))
@@ -183,7 +184,7 @@ class rnn:
 		start_index = random.randint(0, len(self.list_words) - self.maxlen - 1)
 		sentence = self.list_words[start_index: start_index + self.maxlen]
 		print('Sequence : ',sentence)
-		X_test = np.zeros((self.maxlen, len(self.word_len)))
+		X_test = np.zeros((self.maxlen, self.word_len))
 		
 		i = 0
 		for word in sentence:
@@ -200,7 +201,7 @@ class rnn:
 			X_test[i][l_word3] = 1	
 			#print(X_test[i,:])											
 			i = i + 1
-		X_test = np.reshape(X_test, (1, self.maxlen, len(self.word_len)))
+		X_test = np.reshape(X_test, (1, self.maxlen, self.word_len))
 		#np.savetxt('matrix.txt',X_test,fmt="%d")
 		print('X_test shape : ',X_test.shape)
 
