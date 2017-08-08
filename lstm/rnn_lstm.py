@@ -50,7 +50,7 @@ class rnn:
 		# #print("total number of unique chars", len(self.chars))
 
 
-		self.word_len = len(words)
+		self.word_len = len(self.words)
 		
 
 		#print(self.word_len)
@@ -67,6 +67,7 @@ class rnn:
 		# 	file.close()
 
 		def load_data():
+			print('Loading data ...')
 			self.maxlen = 4
 			self.step = 1
 			print("maxlen:",self.maxlen,"step:", self.step)
@@ -76,8 +77,8 @@ class rnn:
 			self.sentences1 = []
 			self.list_words = []
 
-			self.sentences2=[]
-			self.list_words=self.text.lower().split()#collecting the list of words
+			# self.sentences2 = []
+			self.list_words = self.text.lower().split()#collecting the list of words
 		
 
 			for i in range(0,len(self.list_words)-self.maxlen, self.step):
@@ -130,6 +131,7 @@ class rnn:
 
 
 	def create_model(self):
+		print('Initializing model ...')
 		self.model = Sequential()
 		self.model.add(LSTM(64, return_sequences=True, input_shape=(self.maxlen, len(self.word_len))))
 		#self.model.add(Dropout(0.2))
@@ -149,7 +151,7 @@ class rnn:
 	
 		
 	def train_model(self):
-
+		print('Training model .... ')
 		self.best_accuracy = 0.0
 		for iteration in range(0, self.no_epoch):
 			print('Iteration == ',iteration)
@@ -162,12 +164,14 @@ class rnn:
 		print('After Interation best accuracy is : ',self.best_accuracy)	
 
 	def save_model(self):
+		print('Model save ... ')
 		model_json = self.model.to_json()
 		with open("model_cnn.json", "w") as json_file:
 			json_file.write(model_json)
 		self.model.save_weights("model_cnn.h5")
 
 	def load_model(self):
+		print('Loading model ... ')
 		json_file = open('model_cnn.json', 'r')
 		self.model = json_file.read()
 		json_file.close()
