@@ -86,11 +86,12 @@ class rnn:
 		print('nb sequences(length of sentences):', len(self.sentences))
 		print("length of next_word",len(self.next_words))
 
-		self.X_T = []
-		self.X = np.zeros((self.maxlen,self.word_len))
+		#self.X_T = []
+		self.X = np.zeros((len(self.sentences),self.maxlen,self.word_len))
 		self.y = np.zeros((len(self.sentences),self.word_len))
 		j = 0
 		f = open("ro.txt","a")
+		k = 0
 		for sentence in self.sentences:
 			print(sentence)
 			i = 0
@@ -107,7 +108,7 @@ class rnn:
 							print('^',ww[1])
 							l_word1 = int(ww[0])
 							print(l_word1)
-							self.X[i][l_word1] = 1
+							self.X[k,i,l_word1] = 1
 							break
 					fd1.close()
 
@@ -117,9 +118,10 @@ class rnn:
 				f.write('\n')
 
 				i = i + 1
-			self.X_T.append(self.X)
+			k = k + 1
+			#self.X_T.append(self.X)
 
-			self.X.fill(0)
+			#self.X.fill(0)
 			f.write('Target :')
 			
 			with open("lstm_label.csv") as fd2:
@@ -141,10 +143,10 @@ class rnn:
 			j = j + 1
 
 		f.close()
-		self.X_tt = np.asarray(self.X_T)
-		self.X_train = np.reshape(self.X_tt,(len(self.sentences),4,self.word_len))
+		#self.X_tt = np.asarray(self.X_T)
+		#self.X_train = np.reshape(self.X_tt,(len(self.sentences),4,self.word_len))
 
-		print('X train shape : ',self.X_train.shape)
+		print('X train shape : ',self.X.shape)
 		print('Y train shape : ',self.y.shape)		
 
 
@@ -166,7 +168,7 @@ class rnn:
 		self.best_accuracy = 0.0
 		for iteration in range(0, self.no_epoch):
 			print('Iteration == ',iteration)
-			self.accuracy_measures = self.model.fit(self.X_train, self.y, batch_size=128, epochs=1)
+			self.accuracy_measures = self.model.fit(self.X, self.y, batch_size=128, epochs=1)
 			print(self.accuracy_measures.history.keys())
 			self.iter_accuracy = op.itemgetter(0)(self.accuracy_measures.history['acc'])
 			if (self.best_accuracy < self.iter_accuracy):
