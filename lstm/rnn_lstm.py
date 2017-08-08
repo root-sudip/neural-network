@@ -32,15 +32,19 @@ class rnn:
 		self.path = "got.txt"
 
 		try: 
-			self.text = open(self.path).read().lower()
+			self.text = open(self.path).read().lower().replace(',','').replace('"','')
+			print(self.text)
 		except UnicodeDecodeError:
 			import codecs
-			self.text = codecs.open(path, encoding='utf-8').read().lower()
+			self.text = codecs.open(path, encoding='utf-8').read().lower().replace(',','').replace('"','')
+			print(self.text)
+		#self.text = self.textt.strip(',')
 
 		print('corpus length:', len(self.text))
 
 		#self.chars = set(self.text)
-		self.words = set(open('got.txt').read().lower().split())
+		
+		self.words = set(open('got.txt').read().replace(',','').replace('"','').lower().split())
 
 		# self.array = np.asarray
 
@@ -115,6 +119,7 @@ class rnn:
 				with open("lstm_label.csv") as fd1:
 					csv_reader = csv.reader(fd1)
 					for ww in csv_reader:
+						#print(ww[1],':',word)
 						if ww[1] == word:
 							print('^',ww[1])
 							l_word1 = int(ww[0])
@@ -122,8 +127,7 @@ class rnn:
 							self.X[i][l_word1] = 1
 							break
 					fd1.close()
-				
-				
+
 				f.write(str(self.X[i,:]))
 				f.write('\n')
 				f.write(word)
@@ -143,8 +147,7 @@ class rnn:
 						l_word2 =int(ww[0])
 						self.y[j][l_word2] = 1
 						break
-				
-				
+			
 				f.write(str(self.y[j,:]))
 				f.write('\n')
 				f.write(self.next_words[j])
@@ -166,13 +169,7 @@ class rnn:
 		print('Initializing model ...')
 		self.model = Sequential()
 		self.model.add(LSTM(64, return_sequences=True, input_shape=(self.maxlen, self.word_len)))
-		#self.model.add(Dropout(0.2))
-		# self.model.add(LSTM(256, return_sequences=True))
-		# self.model.add(Dropout(0.2))
-		# self.model.add(Activation('sigmoid'))
-		# self.model.add(LSTM(256, return_sequences=True))
-		# self.model.add(Dropout(0.2))
-		# self.model.add(Activation('sigmoid'))
+
 		self.model.add(LSTM(128, return_sequences=False))
 		# self.model.add(Dropout(0.2))
 		self.model.add(Dropout(0.2))
@@ -180,7 +177,6 @@ class rnn:
 		self.model.add(Activation('softmax'))
 
 		self.model.compile(loss='categorical_crossentropy', optimizer='sgd',metrics=["accuracy"])
-	
 		
 	def train_model(self):
 		print('Training model .... ')
@@ -215,8 +211,7 @@ class rnn:
 		start_index = random.randint(0, len(self.list_words) - self.maxlen - 1)
 		sentence = self.list_words[start_index: start_index + self.maxlen]
 		print('Sequence : ',sentence)
-		X_test = np.zeros((self.maxlen, self.word_len))
-		
+		X_test = np.zeros((self.maxlen, self.word_len))	
 		i = 0
 		for word in sentence:
 			#print(word)
@@ -247,13 +242,9 @@ class rnn:
 				if ww[0] == next_index:
 					word2l =ww[1]
 					break
-			fd4.close()
-		
+			fd4.close()	
 		#next_word = self.indices_word[word2l]
 		print('generated text : ',word2l)
-
-			
-		
 
 def completer(text, state):
 	options = [x for x in listdir('.') if x.startswith(text)]
