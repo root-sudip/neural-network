@@ -142,9 +142,9 @@ class rnn:
 	def create_model(self):
 		print('Initializing model ...')
 		self.model = Sequential()
-		
-		self.model.add(LSTM(64, return_sequences=True, input_shape=(self.maxlen, self.word_len)))
-		self.model.add(LSTM(128, return_sequences=False))
+
+		self.model.add(LSTM(100, return_sequences=False, input_shape=(self.maxlen, self.word_len)))
+		#self.model.add(LSTM(512, return_sequences=False))
 
 		self.model.add(Dense(self.y.shape[1]))
 		self.model.add(Activation('softmax'))
@@ -165,7 +165,7 @@ class rnn:
 		print('After',self.no_epoch,'Interation best accuracy is : ',self.best_accuracy)	
 
 	def save_model(self):
-		print('Model save ... ')
+		print('Model saved ... ')
 		model_json = self.model.to_json()
 		with open("model_cnn.json", "w") as json_file:
 			json_file.write(model_json)
@@ -223,7 +223,7 @@ def completer(text, state):
 readline.set_completer(completer)
 readline.parse_and_bind("tab: complete")
 
-ob = rnn(200)
+ob = rnn(150)
 
 if sys.argv[1] == 'test':
 	print('Trying to predict ...')
