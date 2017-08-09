@@ -143,7 +143,7 @@ class rnn:
 		print('Initializing model ...')
 		self.model = Sequential()
 
-		self.model.add(LSTM(100, return_sequences=False, input_shape=(self.maxlen, self.word_len)))
+		self.model.add(LSTM(256, return_sequences=False, input_shape=(self.maxlen, self.word_len)))
 		#self.model.add(LSTM(512, return_sequences=False))
 
 		self.model.add(Dense(self.y.shape[1]))
