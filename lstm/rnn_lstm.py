@@ -112,7 +112,7 @@ class rnn:
 							break
 					fd1.close()
 
-				f.write(str(self.X[i,:]))
+				f.write(str(self.X[k,i,:]))
 				f.write('\n')
 				f.write(word)
 				f.write('\n')
@@ -154,14 +154,12 @@ class rnn:
 		print('Initializing model ...')
 		self.model = Sequential()
 		self.model.add(LSTM(64, return_sequences=True, input_shape=(self.maxlen, self.word_len)))
-
 		self.model.add(LSTM(128, return_sequences=False))
-
-		self.model.add(Dropout(0.2))
+		#self.model.add(Dropout(0.2))
 		self.model.add(Dense(self.y.shape[1]))
 		self.model.add(Activation('softmax'))
 
-		self.model.compile(loss='categorical_crossentropy', optimizer='sgd',metrics=["accuracy"])
+		self.model.compile(loss='categorical_crossentropy', optimizer='rmsprop',metrics=["accuracy"])
 		
 	def train_model(self):
 		print('Training model .... ')
