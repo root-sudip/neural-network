@@ -208,7 +208,7 @@ class rnn:
 			for ww in csv_reader:
 				if ww[0] == str(next_index):
 					word2l =ww[1]
-					print('Generated/Predicted text : ',word2l
+					print('Generated/Predicted text : ',word2l)
 					break
 			fd4.close()	
 
