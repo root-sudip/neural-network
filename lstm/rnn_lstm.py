@@ -182,7 +182,7 @@ class rnn:
 
 		start_index = random.randint(0, len(self.list_words) - self.maxlen - 1)
 		sentence = self.list_words[start_index: start_index + self.maxlen]
-		print('Sequence : ',' '.join(sentence))
+		
 		X_test = np.zeros((self.maxlen, self.word_len))	
 		i = 0
 		for word in sentence:
@@ -200,6 +200,8 @@ class rnn:
 		print('X_test shape : ',X_test.shape)
 		preds = self.model.predict(X_test, verbose=0)
 		next_index = np.argmax(preds) # finding the maximum confidence value
+		
+		print('Sequence : ',' '.join(sentence))
 
 		with open("lstm_label.csv") as fd4:
 			csv_reader = csv.reader(fd4)
