@@ -200,7 +200,7 @@ class rnn:
 		print('X_test shape : ',X_test.shape)
 		preds = self.model.predict(X_test, verbose=0)
 		next_index = np.argmax(preds) # finding the maximum confidence value
-		
+
 		print('Sequence : ',' '.join(sentence))
 
 		with open("lstm_label.csv") as fd4:
@@ -208,7 +208,7 @@ class rnn:
 			for ww in csv_reader:
 				if ww[0] == str(next_index):
 					word2l =ww[1]
-					print('Generated/Predicted text : ',word2l)
+					print('Generated/Predicted text : ',word2l
 					break
 			fd4.close()	
 
