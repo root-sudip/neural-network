@@ -142,6 +142,7 @@ class rnn:
 	def create_model(self):
 		print('Initializing model ...')
 		self.model = Sequential()
+		
 		self.model.add(LSTM(64, return_sequences=True, input_shape=(self.maxlen, self.word_len)))
 		self.model.add(LSTM(128, return_sequences=False))
 
