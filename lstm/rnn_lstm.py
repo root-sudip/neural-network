@@ -26,22 +26,20 @@ import random
 
 class rnn:
 	def __init__(self,no_epoch):
-		print('......')
-		self.no_epoch = no_epoch
 
+		self.no_epoch = no_epoch
 		self.path = "got.txt"
 
 		try: 
 			self.text = open(self.path).read().lower().replace(',','').replace('"','')
-			print(self.text)
 		except UnicodeDecodeError:
 			import codecs
 			self.text = codecs.open(path, encoding='utf-8').read().lower().replace(',','').replace('"','')
-			print(self.text)
+
 
 		print('corpus length:', len(self.text))
 		
-		self.words = set(open('got.txt').read().replace(',','').replace('"','').lower().split())
+		self.words = set(open(self.path).read().replace(',','').replace('"','').lower().split())
 
 		print("words",type(self.words))
 		print("total number of unique words",len(self.words))
@@ -49,51 +47,48 @@ class rnn:
 
 
 		self.word_len = len(self.words)
-		self.maxlen = 4
-		self.step = 1
+		self.maxlen = 4 #max len
+		self.step = 1 #stride size
 
-		#print(self.word_len)
-		# print("word_len", type(self.word_len), "length:",len(self.word_len) )
-		# print("indices_words", type(self.indices_word), "length", len(self.indices_word))
-		# with open("lstm_label.csv","a") as file:
-		# 	l = 0 
-		# 	for i in self.words:
-		# 		file.write(str(l))
-		# 		file.write(',')
-		# 		file.write(i)
-		# 		file.write('\n')
-		# 		l = l + 1
-		# 	file.close()
 
-	def load_data(self):
-		print('Loading data ...')
-		self.maxlen = 4
-		self.step = 1
 		print("maxlen:",self.maxlen,"step:", self.step)
-		self.sentences = []
-		self.next_words = []
 
-		self.list_words = []#list of word from corpus
-		self.list_words = self.text.lower().split()#collecting the list of words
+		self.sentences = [] #list of samples for training
+		self.next_words = [] #list of targeted words for training
+
+		self.list_words = [] #list of words from corpus
+		self.list_words = self.text.lower().split()#storing the list of words
 		
 
 		for i in range(0,len(self.list_words)-self.maxlen, self.step):
-
 			self.sentences.append(' '.join(self.list_words[i:i+self.maxlen]))
-
 			self.next_words.append(self.list_words[i+self.maxlen])
 
 		print('nb sequences(length of sentences):', len(self.sentences))
 		print("length of next_word",len(self.next_words))
 
-		#self.X_T = []
-		self.X = np.zeros((len(self.sentences),self.maxlen,self.word_len))
-		self.y = np.zeros((len(self.sentences),self.word_len))
+
+	def  make_label(self): # writing the csv file for labeling
+		self.words = set(open(self.path).read().replace(',','').replace('"','').lower().split())
+		with open("lstm_label.csv","a") as file:
+			l = 0 
+			for i in self.words:
+				file.write(str(l))
+				file.write(',')
+				file.write(i)
+				file.write('\n')
+				l = l + 1
+			file.close()
+
+	def load_data(self):
+		print('Loading data ...')
+
+		self.X = np.zeros((len(self.sentences),self.maxlen,self.word_len))#making the training samples array
+		self.y = np.zeros((len(self.sentences),self.word_len))#making the target array for samples
 		j = 0
-		f = open("ro.txt","a")
+		f = open("ro.txt","a") # for log
 		k = 0
 		for sentence in self.sentences:
-			print(sentence)
 			i = 0
 			f.write('{')
 			f.write('\n')
@@ -105,9 +100,7 @@ class rnn:
 					csv_reader = csv.reader(fd1)
 					for ww in csv_reader:
 						if ww[1] == word:
-							print('^',ww[1])
 							l_word1 = int(ww[0])
-							print(l_word1)
 							self.X[k,i,l_word1] = 1
 							break
 					fd1.close()
@@ -119,9 +112,7 @@ class rnn:
 
 				i = i + 1
 			k = k + 1
-			#self.X_T.append(self.X)
 
-			#self.X.fill(0)
 			f.write('Target :')
 			
 			with open("lstm_label.csv") as fd2:
@@ -143,8 +134,6 @@ class rnn:
 			j = j + 1
 
 		f.close()
-		#self.X_tt = np.asarray(self.X_T)
-		#self.X_train = np.reshape(self.X_tt,(len(self.sentences),4,self.word_len))
 
 		print('X train shape : ',self.X.shape)
 		print('Y train shape : ',self.y.shape)		
@@ -155,7 +144,7 @@ class rnn:
 		self.model = Sequential()
 		self.model.add(LSTM(64, return_sequences=True, input_shape=(self.maxlen, self.word_len)))
 		self.model.add(LSTM(128, return_sequences=False))
-		#self.model.add(Dropout(0.2))
+
 		self.model.add(Dense(self.y.shape[1]))
 		self.model.add(Activation('softmax'))
 
@@ -172,7 +161,7 @@ class rnn:
 			if (self.best_accuracy < self.iter_accuracy):
 				self.best_accuracy = self.iter_accuracy
 			self.save_model()
-		print('After Interation best accuracy is : ',self.best_accuracy)	
+		print('After',self.no_epoch,'Interation best accuracy is : ',self.best_accuracy)	
 
 	def save_model(self):
 		print('Model save ... ')
@@ -189,42 +178,37 @@ class rnn:
 		self.model = model_from_json(self.model)
 		self.model.load_weights("model_cnn.h5")
 
-	def test_model(self,filename=None,no_samples=None,label=None):
+	def test_model(self):
 
 		start_index = random.randint(0, len(self.list_words) - self.maxlen - 1)
 		sentence = self.list_words[start_index: start_index + self.maxlen]
-		print('Sequence : ',sentence)
+		print('Sequence : ',' '.join(sentence))
 		X_test = np.zeros((self.maxlen, self.word_len))	
 		i = 0
 		for word in sentence:
-
 			with open("lstm_label.csv") as fd3:
 				csv_reader = csv.reader(fd3)
 				for ww in csv_reader:
 					if ww[1] == word:
-						print(ww[1],' : ',word)
 						l_word3 =int(ww[0])
+						X_test[i][l_word3] = 1
 						break
 				fd3.close()
-			print(l_word3)
-			X_test[i][l_word3] = 1	
-										
+							
 			i = i + 1
 		X_test = np.reshape(X_test, (1, self.maxlen, self.word_len))
 		print('X_test shape : ',X_test.shape)
 		preds = self.model.predict(X_test, verbose=0)
-		next_index = np.argmax(preds)
-		print('Confidence value : ',next_index)
-		word2l = ''
+		next_index = np.argmax(preds) # finding the maximum confidence value
+
 		with open("lstm_label.csv") as fd4:
 			csv_reader = csv.reader(fd4)
 			for ww in csv_reader:
-				if ww[0] == next_index:
+				if ww[0] == str(next_index):
 					word2l =ww[1]
+					print('Generated/Predicted text : ',word2l)
 					break
 			fd4.close()	
-
-		print('generated text : ',word2l)
 
 def completer(text, state):
 	options = [x for x in listdir('.') if x.startswith(text)]
@@ -233,11 +217,10 @@ def completer(text, state):
 	except IndexError:
 		return None
 
-
 readline.set_completer(completer)
 readline.parse_and_bind("tab: complete")
 
-ob = rnn(150)
+ob = rnn(200)
 
 if sys.argv[1] == 'test':
 	print('Trying to predict ...')
@@ -248,7 +231,9 @@ elif sys.argv[1] == 'train':
 	ob.create_model()
 	ob.train_model()
 	ob.save_model()
-else:
+elif sys.argv[1] == 'label':
+	ob.make_label()
+elif sys.argv[1] == '':
 	print('You should write the argv parameters.')
-
-
+else:
+	print('You should use train/test/label as argv argument')
