@@ -115,7 +115,7 @@ class rnn:
 				f.write(str(self.X[i,:]))
 				f.write('\n')
 				f.write(word)
-				f.write('\n'
+				f.write('\n')
 
 				i = i + 1
 			k = k + 1
