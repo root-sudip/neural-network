@@ -17,7 +17,7 @@ import operator as op
 import os
 from PIL import Image
 
-import sys
+import sy
 
 import readline
 from os import listdir
