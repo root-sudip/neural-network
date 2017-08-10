@@ -17,7 +17,7 @@ import operator as op
 import os
 from PIL import Image
 
-import sy
+import sys
 
 import readline
 from os import listdir
@@ -45,28 +45,24 @@ class rnn:
 		print("total number of unique words",len(self.words))
 
 
-
 		self.word_len = len(self.words)
 		self.maxlen = 4 #max len
 		self.step = 1 #stride size
 
 
 		print("maxlen:",self.maxlen,"step:", self.step)
-
 		self.sentences = [] #list of samples for training
 		self.next_words = [] #list of targeted words for training
 
 		self.list_words = [] #list of words from corpus
 		self.list_words = self.text.lower().split()#storing the list of words
 		
-
 		for i in range(0,len(self.list_words)-self.maxlen, self.step):
 			self.sentences.append(' '.join(self.list_words[i:i+self.maxlen]))
 			self.next_words.append(self.list_words[i+self.maxlen])
 
 		print('nb sequences(length of sentences):', len(self.sentences))
 		print("length of next_word",len(self.next_words))
-
 
 	def  make_label(self): # writing the csv file for labeling
 		self.words = set(open(self.path).read().replace(',','').replace('"','').lower().split())
