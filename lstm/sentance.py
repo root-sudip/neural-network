@@ -195,7 +195,7 @@ class rnn:
 			 		csv_reader = csv.reader(fd3)
 			 		for ww in csv_reader:
 			 			if ww[1] == word:
-			 				l_word3 =int(ww[0])
+			 				l_word3 = int(ww[0])
 			 				X_test[0,0,l_word3] = 1
 			 				break
 			 		fd3.close()
@@ -206,7 +206,7 @@ class rnn:
 					csv_reader = csv.reader(fd4)
 					for ww in csv_reader:
 						if ww[0] == str(next_index):
-							word2l =ww[1]
+							word2l = ww[1]
 							word = str(word2l)
 							print('Generated/Predicted text : ',word2l)
 							break
