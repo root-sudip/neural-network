@@ -184,6 +184,7 @@ class rnn:
 		X_test = np.zeros((self.maxlen, self.word_len))
 		X_test = np.reshape(X_test, (1, self.maxlen, self.word_len))	
 		predict_word = ''
+		sentence = ''
 		while True:
 
 			X_test.fill(0)
@@ -200,7 +201,10 @@ class rnn:
 			 				break
 			 		fd3.close()
 				preds = self.model.predict(X_test, verbose=0)
-				next_index = np.argmax(preds)
+				print('Prdict shape : ',preds.shape)
+				next_index1 = preds.flatten()
+				most_three = next_index1.argsort()[-3:][::-1]
+				next_index = most_three[0] #np.argmax(preds)
 
 				with open("lstm_label.csv") as fd4:
 					csv_reader = csv.reader(fd4)
@@ -208,8 +212,20 @@ class rnn:
 						if ww[0] == str(next_index):
 							word2l = ww[1]
 							word = str(word2l)
-							print('Generated/Predicted text : ',word2l)
-							break
+						
+							if word in sentence.split():
+								for ww in csv_reader:
+									next_index = most_three[1]
+									if ww[0] == str(next_index):
+										word2l = ww[1]
+										word = str(word2l)
+										print('Generated/Predicted text : ',word2l)
+										sentence = sentence + str(word2l) + ' '
+										break
+							else:
+								print('Generated/Predicted text : ',word2l)
+								sentence = sentence + str(word2l) + ' '
+
 					fd4.close()
 
 def completer(text, state):
