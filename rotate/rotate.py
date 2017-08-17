@@ -1,3 +1,8 @@
+"""
+Developer: Sudip Das
+Licence : Indian Statistical Institute
+"""
+
 from PIL import Image
 import os
 

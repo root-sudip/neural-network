@@ -1,3 +1,7 @@
+"""
+Developer: Sudip Das
+Licence : Indian Statistical Institute
+"""
 from __future__ import print_function
 
 from keras.models import Sequential

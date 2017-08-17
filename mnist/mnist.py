@@ -1,3 +1,9 @@
+"""
+Developer: Sudip Das
+Licence : Indian Statistical Institute
+"""
+
+
 import numpy as np
 import pandas
 from keras.models import Sequential

@@ -1,3 +1,8 @@
+"""
+Developer: Sudip Das
+Licence : Indian Statistical Institute
+"""
+
 import numpy
 from keras.models import Sequential
 from keras.layers import Dense
