@@ -5,7 +5,6 @@ path_list = ['set0/','set1/']
 
 
 for dir_name in path_list:
-	#print(dir_name)
 	for file in os.listdir(dir_name):
 		if file.endswith('.png'):
 			img = Image.open(dir_name+file).rotate(120,expand=True)
