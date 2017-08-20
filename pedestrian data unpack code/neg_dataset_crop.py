@@ -1,3 +1,5 @@
+
+
 import os
 import re
 import json
@@ -65,10 +67,19 @@ for set_name in sorted(img_fns.keys()):
                                     k = k + 1
                             except ValueError:
                                 pass
-
                     ###
                     n_objects += 1
                 wri.write(img)
+            else:
+                for i in range(0,height,200):
+                        for j in range(0,width,200):
+                            try:
+                                crop = img[i:i+200,j:j+200]
+                                im = Image.fromarray(crop)
+                                im.save(sys.argv[1]+"image_"+str(k)+".png")
+                                k = k + 1
+                            except ValueError:
+                                pass
         wri.release()
         print(set_name, video_name)
 print(n_objects)
