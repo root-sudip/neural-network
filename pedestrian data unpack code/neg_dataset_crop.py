@@ -1,4 +1,7 @@
-
+"""
+Developer: Sudip Das
+Licence : Indian Statistical Institute
+"""
 
 import os
 import re
