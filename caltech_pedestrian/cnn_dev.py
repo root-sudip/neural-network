@@ -60,7 +60,7 @@ class cnn_dev:
 			j = 0 
 			csv_reader = csv.reader(fl)
 			for row in csv_reader:
-				# print('dir name =>',row[0])
+
 				print("\rFile Name : ",row[0],"  Label : ",row[1],end="")
 				self.img_array = np.asarray(Image.open(row[0]).resize((32,32), Image.ANTIALIAS))
 				self.training_data_list.append(self.img_array)
@@ -89,28 +89,27 @@ class cnn_dev:
 			self.Y_validation_d = np.zeros([samples])
 
 
-		with open("v_label.csv","r") as fl:
-			j = 0 
-			csv_reader = csv.reader(fl)
-			for row in csv_reader:
-				# print('dir name =>',row[0])
-				print("\rFile Name : ",row[0],"  Label : ",row[1],end="")
-				img_array = np.asarray(Image.open(row[0]).resize((32,32), Image.ANTIALIAS))
-				self.validation_data_list.append(self.img_array)
-				self.Y_validation_d[j] = row[1]
-				j = j + 1
+			with open("v_label.csv","r") as fl:
+				j = 0 
+				csv_reader = csv.reader(fl)
+				for row in csv_reader:
+					print("\rFile Name : ",row[0],"  Label : ",row[1],end="")
+					img_array = np.asarray(Image.open(row[0]).resize((32,32), Image.ANTIALIAS))
+					self.validation_data_list.append(self.img_array)
+					self.Y_validation_d[j] = row[1]
+					j = j + 1
 
-		print()
-		print('Validation data loaded.')
+			print()
+			print('Validation data loaded.')
 
-		array_list_l = np.asarray(self.validation_data_list)
-		self.X_validation = np.reshape(array_list_l,(samples,32,32,3))
-		self.Y_validation = np_utils.to_categorical(self.Y_train_d)
+			array_list_l = np.asarray(self.validation_data_list)
+			self.X_validation = np.reshape(array_list_l,(samples,32,32,3))
+			self.Y_validation = np_utils.to_categorical(self.Y_train_d)
 
-		print('Total number of Images : ',j)
+			print('Total number of Images : ',j)
 
-		print('X_train shape : ',self.X_validation.shape)
-		print('Y_train one hot shape : ',self.Y_validation.shape)
+			print('X_train shape : ',self.X_validation.shape)
+			print('Y_train one hot shape : ',self.Y_validation.shape)
 
 
 	def create_model(self):
