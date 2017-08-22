@@ -30,9 +30,9 @@ class cnn_dev:
 		else:
 			self.no_epoch = no_epoch
 
-	def lebel(self):
-		file = open('label.csv','a')
-		for dirName, subdirList, fileList in os.walk(sys.argv[1]): 
+	def label(self,filename=None):
+		file = open('v_label.csv','a')
+		for dirName, subdirList, fileList in os.walk(sys.argv[2]): 
 			l = 0
 			for subdir_name in subdirList:
 				for fname in os.listdir(dirName+'/'+subdir_name+'/'):
@@ -47,6 +47,7 @@ class cnn_dev:
 		file.close()
 
 	def load_data(self,path_name,samples=None):
+		print('Loading data for training...')
 		self.training_data_list = []
 		j = 0
 		if samples == None:
@@ -78,6 +79,40 @@ class cnn_dev:
 		print('X_train shape : ',self.X_train.shape)
 		print('Y_train one hot shape : ',self.Y_train.shape)
 
+	def load_data_for_validation(self,path_name,samples=None):
+		print('Loading data for validation...')
+		self.validation_data_list = []
+		j = 0
+		if samples == None:
+			print('Enter number of samples')
+		else:
+			self.Y_validation_d = np.zeros([samples])
+
+
+		with open("v_label.csv","r") as fl:
+			j = 0 
+			csv_reader = csv.reader(fl)
+			for row in csv_reader:
+				# print('dir name =>',row[0])
+				print("\rFile Name : ",row[0],"  Label : ",row[1],end="")
+				img_array = np.asarray(Image.open(row[0]).resize((32,32), Image.ANTIALIAS))
+				self.validation_data_list.append(self.img_array)
+				self.Y_validation_d[j] = row[1]
+				j = j + 1
+
+		print()
+		print('Validation data loaded.')
+
+		array_list_l = np.asarray(self.validation_data_list)
+		self.X_validation = np.reshape(array_list_l,(samples,32,32,3))
+		self.Y_validation = np_utils.to_categorical(self.Y_train_d)
+
+		print('Total number of Images : ',j)
+
+		print('X_train shape : ',self.X_validation.shape)
+		print('Y_train one hot shape : ',self.Y_validation.shape)
+
+
 	def create_model(self):
 		self.model = Sequential()
 		
@@ -98,7 +133,7 @@ class cnn_dev:
 		self.best_accuracy = 0.0
 		for i in range(0,self.no_epoch):
 			print('Iteration == ',i)
-			self.accuracy = self.model.fit(self.X_train, self.Y_train, nb_epoch=1,batch_size = 120)
+			self.accuracy = self.model.fit(self.X_train, self.Y_train, nb_epoch=1,batch_size = 120,validation_data = (self.X_validation, self.Y_validation), verbose = 1)
 			print(self.accuracy.history.keys())
 			self.iter_accuracy = op.itemgetter(0)(self.accuracy.history['acc'])
 			if (self.best_accuracy < self.iter_accuracy):
@@ -126,6 +161,7 @@ ob = cnn_dev()
 
 if sys.argv[1] == 'train':
 	ob.load_data(path_name=sys.argv[2],samples=80717)
+	ob.load_data_for_validation(path_name=sys.argv[3],samples=40000)
 	ob.create_model()
 	ob.train_model()
 	ob.save_model()
