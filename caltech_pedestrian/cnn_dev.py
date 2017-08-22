@@ -30,7 +30,23 @@ class cnn_dev:
 		else:
 			self.no_epoch = no_epoch
 
-	def load_data(self,p_path_name,n_path_name,samples=None):
+	def lebel(self):
+		file = open('label.csv','a')
+		for dirName, subdirList, fileList in os.walk(sys.argv[1]): 
+			l = 0
+			for subdir_name in subdirList:
+				for fname in os.listdir(dirName+'/'+subdir_name+'/'):
+					file.write(dirName)
+					file.write(subdir_name)
+					file.write("/")
+					file.write(fname)
+					file.write(",")
+					file.write(str(l))
+					file.write("\n")
+				l = l + 1
+		file.close()
+
+	def load_data(self,path_name,samples=None):
 		self.training_data_list = []
 		j = 0
 		if samples == None:
@@ -38,38 +54,26 @@ class cnn_dev:
 		else:
 			self.Y_train_d = np.zeros([samples])
 
-		#for positive training sample
-		p = 0
-		for p_file_name in sorted(os.listdir(p_path_name)):
-			print("\rPositive File Name : ",p_file_name,end="")
-			self.img_array = np.asarray(Image.open(p_path_name+p_file_name).resize((32,32), Image.ANTIALIAS))
-			self.training_data_list.append(self.img_array)
-			self.Y_train_d[j] = 1
-			j = j + 1
-			p = p + 1
+
+		with open("label.csv","r") as fl:
+			j = 0 
+			csv_reader = csv.reader(fl)
+			for row in csv_reader:
+				# print('dir name =>',row[0])
+				print("\rFile Name : ",row[0],"  Label : ",row[1],end="")
+				self.img_array = np.asarray(Image.open(row[0]).resize((32,32), Image.ANTIALIAS))
+				self.training_data_list.append(self.img_array)
+				self.Y_train_d[j] = row[1]
+				j = j + 1
 
 		print()
-		print('Positive training set loading completed.')
-		#for negative training sample
-		n = 0 
-		for n_file_name in sorted(os.listdir(n_path_name)):
-			print("\rNegative File Name : ",n_file_name,end="")
-			self.img_array = np.asarray(Image.open(n_path_name+n_file_name).resize((32,32), Image.ANTIALIAS))
-			self.training_data_list.append(self.img_array)
-			self.Y_train_d[j] = 0
-			j = j + 1
-			n = n + 1
-
-		print()
-		print('Negative training set loading completed.')
-
+		print('Training data loaded.')
 
 		self.array_list_l = np.asarray(self.training_data_list)
 		self.X_train = np.reshape(self.array_list_l,(samples,32,32,3))
 		self.Y_train = np_utils.to_categorical(self.Y_train_d)
 
-		print('Total number of Positive Sample : ',p)
-		print('Total number of Negative Sample : ',n)
+		print('Total number of Images : ',j)
 
 		print('X_train shape : ',self.X_train.shape)
 		print('Y_train one hot shape : ',self.Y_train.shape)
@@ -121,7 +125,7 @@ class cnn_dev:
 ob = cnn_dev()
 
 if sys.argv[1] == 'train':
-	ob.load_data(p_path_name=sys.argv[2],n_path_name=sys.argv[3],samples=80717)
+	ob.load_data(path_name=sys.argv[2],samples=80717)
 	ob.create_model()
 	ob.train_model()
 	ob.save_model()
@@ -131,6 +135,9 @@ elif sys.argv[1] == 'test':
 
 elif sys.argv[1] == '':
 	print('You should use train/test.')
+
+elif sys.argv[1] == 'label':
+	ob.label()
 
 else:
 	print('You should write the argv parameters.')
