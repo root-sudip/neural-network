@@ -104,7 +104,7 @@ class cnn_dev:
 
 			array_list_l = np.asarray(self.validation_data_list)
 			self.X_validation = np.reshape(array_list_l,(samples,32,32,3))
-			self.Y_validation = np_utils.to_categorical(self.Y_train_d)
+			self.Y_validation = np_utils.to_categorical(self.Y_validation_d)
 
 			print('Total number of Images : ',j)
 
