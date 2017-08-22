@@ -115,12 +115,12 @@ class cnn_dev:
 	def create_model(self):
 		self.model = Sequential()
 		
-		self.model.add(Conv2D(512,(5,5),padding='same',input_shape=self.X_train.shape[1:]))
+		self.model.add(Conv2D(100,(5,5),padding='same',input_shape=self.X_train.shape[1:]))
 		self.model.add(Activation('sigmoid'))
 		self.model.add(MaxPooling2D(pool_size=(3,3)))
 
 		self.model.add(Flatten())
-		self.model.add(Dense(512))
+		self.model.add(Dense(200))
 		self.model.add(Activation('sigmoid'))
 
 		self.model.add(Dense(2))
@@ -130,15 +130,24 @@ class cnn_dev:
 
 	def train_model(self):
 		self.best_accuracy = 0.0
+		self.best_val_accuracy = 0.0
 		for i in range(0,self.no_epoch):
 			print('Iteration == ',i)
 			self.accuracy = self.model.fit(self.X_train, self.Y_train, nb_epoch=1,batch_size = 120,validation_data = (self.X_validation, self.Y_validation), verbose = 1)
 			print(self.accuracy.history.keys())
+
 			self.iter_accuracy = op.itemgetter(0)(self.accuracy.history['acc'])
+			self.iter_val_accuracy = op.itemgetter(0)(self.accuracy.history['val_acc'])
+
 			if (self.best_accuracy < self.iter_accuracy):
 				self.best_accuracy = self.iter_accuracy
+
+			if (self.best_val_accuracy < self.iter_val_accuracy):
+				self.best_val_accuracy = self.iter_val_accuracy
 			self.save_model()
-		print('After Interation best accuracy is : ',self.best_accuracy)
+
+		print('After Interation best training accuracy is : ',self.best_accuracy)
+		print('After Interation best validation accuracy is : ',self.best_val_accuracy)
 
 	def save_model(self):
 		model_json = self.model.to_json()
