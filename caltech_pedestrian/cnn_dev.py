@@ -79,7 +79,7 @@ class cnn_dev:
 		
 		self.model.add(Conv2D(512,(5,5),padding='same',input_shape=self.X_train.shape[1:]))
 		self.model.add(Activation('sigmoid'))
-		self.model.add(MaxPooling2D(pool_size=(3,3),strides=None))
+		self.model.add(MaxPooling2D(pool_size=(3,3)))
 
 		self.model.add(Flatten())
 		self.model.add(Dense(512))
@@ -88,7 +88,7 @@ class cnn_dev:
 		self.model.add(Dense(2))
 		self.model.add(Activation('softmax'))
 
-		self.model.compile(loss='categorical_crossentropy',optimizer='sgd',matrix=['accuracy'])
+		self.model.compile(loss='categorical_crossentropy',optimizer='sgd',metrics=['accuracy'])
 
 	def train_model(self):
 		self.best_accuracy = 0.0
@@ -121,7 +121,7 @@ class cnn_dev:
 ob = cnn_dev()
 
 if sys.argv[1] == 'train':
-	ob.load_data(p_path_name=sys.argv[2],n_path_name=sys.argv[3],samples=248617)
+	ob.load_data(p_path_name=sys.argv[2],n_path_name=sys.argv[3],samples=80717)
 	ob.create_model()
 	ob.train_model()
 	ob.save_model()
