@@ -62,8 +62,8 @@ class cnn_dev:
 				j = j + 1
 			print()
 
-		self.list_csv_training_suffle = shuffle(self.list_csv_training)
-		print(self.list_csv_training_suffle)
+		shuffle(self.list_csv_training)
+		print(self.list_csv_training)
 
 
 
