@@ -22,6 +22,8 @@ from keras.models import model_from_json
 import readline
 from os import listdir
 
+from random import shuffle
+
 class cnn_dev:
 	def __init__(self,no_epoch=None):
 		print('CNN object initialized ...')
@@ -46,6 +48,25 @@ class cnn_dev:
 				l = l + 1
 		file.close()
 
+
+
+	def load_path(self):
+
+		self.list_csv_training = []
+		with open("label.csv","r") as fl:
+			j = 0 
+			csv_reader = csv.reader(fl)
+			for row in csv_reader:
+				print("\rFile Name : ",row[0],"  Label : ",row[1],end="")
+				self.list_csv_training.append(str(row))
+				j = j + 1
+			print()
+
+		self.list_csv_training_suffle = shuffle(self.list_csv_training)
+		print(self.list_csv_training_suffle)
+
+
+
 	def load_data(self,path_name,samples=None):
 		print('Loading data for training...')
 		self.training_data_list = []
@@ -62,7 +83,7 @@ class cnn_dev:
 			for row in csv_reader:
 
 				print("\rFile Name : ",row[0],"  Label : ",row[1],end="")
-				self.img_array = np.asarray(Image.open(row[0]).resize((32,32), Image.ANTIALIAS))
+				self.img_array = np.asarray(Image.open(row[0]).resize((256,256), Image.ANTIALIAS))
 				self.training_data_list.append(self.img_array)
 				self.Y_train_d[j] = row[1]
 				j = j + 1
@@ -73,6 +94,9 @@ class cnn_dev:
 		self.array_list_l = np.asarray(self.training_data_list)
 		self.X_train = np.reshape(self.array_list_l,(samples,32,32,3))
 		self.Y_train = np_utils.to_categorical(self.Y_train_d)
+
+		np.savetxt('onehot.txt',self.Y_train)
+
 
 		print('Total number of Images : ',j)
 
@@ -115,13 +139,33 @@ class cnn_dev:
 	def create_model(self):
 		self.model = Sequential()
 		
-		self.model.add(Conv2D(100,(5,5),padding='same',input_shape=self.X_train.shape[1:]))
+		self.model.add(Conv2D(10,(7,7),padding='same',input_shape=self.X_train.shape[1:]))
 		self.model.add(Activation('sigmoid'))
 		self.model.add(MaxPooling2D(pool_size=(3,3)))
 
-		self.model.add(Flatten())
-		self.model.add(Dense(200))
+		self.model.add(Conv2D(20,(7,7),padding='same'))
 		self.model.add(Activation('sigmoid'))
+		self.model.add(MaxPooling2D(pool_size=(3,3)))
+
+		self.model.add(Conv2D(30,(7,7),padding='same'))
+		self.model.add(Activation('sigmoid'))
+		self.model.add(MaxPooling2D(pool_size=(1,1)))
+
+		# self.model.add(Conv2D(40,(5,5),padding='same'))
+		# self.model.add(Activation('softmax'))
+		# self.model.add(MaxPooling2D(pool_size=(1,1)))
+
+		# self.model.add(Conv2D(30,(5,5),padding='same'))
+		# self.model.add(Activation('softmax'))
+		# self.model.add(MaxPooling2D(pool_size=(1,1)))
+
+		#model.add(Dropout(0.25))
+
+		self.model.add(Flatten())
+		# self.model.add(Dense(10))
+		# self.model.add(Activation('sigmoid'))
+
+		# model.add(Dropout(0.2))
 
 		self.model.add(Dense(2))
 		self.model.add(Activation('softmax'))
@@ -133,7 +177,7 @@ class cnn_dev:
 		self.best_val_accuracy = 0.0
 		for i in range(0,self.no_epoch):
 			print('Iteration == ',i)
-			self.accuracy = self.model.fit(self.X_train, self.Y_train, nb_epoch=1,batch_size = 120,validation_data = (self.X_validation, self.Y_validation), verbose = 1)
+			self.accuracy = self.model.fit(self.X_train, self.Y_train, nb_epoch=1,batch_size = 100,validation_data = (self.X_validation, self.Y_validation), verbose = 1)
 			print(self.accuracy.history.keys())
 
 			self.iter_accuracy = op.itemgetter(0)(self.accuracy.history['acc'])
@@ -168,11 +212,12 @@ class cnn_dev:
 ob = cnn_dev()
 
 if sys.argv[1] == 'train':
-	ob.load_data(path_name=sys.argv[2],samples=80717)
-	ob.load_data_for_validation(path_name=sys.argv[3],samples=40000)
-	ob.create_model()
-	ob.train_model()
-	ob.save_model()
+	ob.load_path()
+	#ob.load_data(path_name=sys.argv[2],samples=80717)
+	#ob.load_data_for_validation(path_name=sys.argv[3],samples=40000)
+	#ob.create_model()
+	#ob.train_model()
+	#ob.save_model()
 
 elif sys.argv[1] == 'test':
 	pass
