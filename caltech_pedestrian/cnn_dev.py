@@ -86,7 +86,7 @@ class cnn_dev:
 					#print()
 
 					print("\rFile Name : ",temp[0].replace('[','').replace("'",""),"  Label : ",temp[1].replace(']','').replace("'",""),end="")
-					img_array = np.asarray(Image.open(temp[0].replace('[','').replace("'",'')).resize((256,256), Image.ANTIALIAS))
+					img_array = np.asarray(Image.open(temp[0].replace('[','').replace("'",'')).resize((32,32), Image.ANTIALIAS))
 					training_data_list.append(img_array)
 					Y_train_d[j] = int(temp[1].replace(']','').replace("'",""))
 					i = i + 1
@@ -98,7 +98,7 @@ class cnn_dev:
 			print('Total number of file read : ',j)
 
 			array_list_l = np.asarray(training_data_list)
-			X_train = np.reshape(array_list_l,(samples,256,256,3))
+			X_train = np.reshape(array_list_l,(samples,32,32,3))
 			Y_train = np_utils.to_categorical(Y_train_d)
 
 			return X_train, Y_train
@@ -141,15 +141,15 @@ class cnn_dev:
 	def create_model(self):
 		self.model = Sequential()
 		
-		self.model.add(Conv2D(10,(15,15),padding='same',input_shape=(256,256,3)))
+		self.model.add(Conv2D(10,(5,5),padding='same',input_shape=(32,32,3)))
 		self.model.add(Activation('sigmoid'))
-		self.model.add(MaxPooling2D(pool_size=(10,10)))
+		self.model.add(MaxPooling2D(pool_size=(3,3)))
 
-		self.model.add(Conv2D(20,(15,15),padding='same'))
+		self.model.add(Conv2D(20,(5,5),padding='same'))
 		self.model.add(Activation('sigmoid'))
-		self.model.add(MaxPooling2D(pool_size=(10,10)))
+		self.model.add(MaxPooling2D(pool_size=(3,3)))
 
-		self.model.add(Conv2D(30,(15,15),padding='same'))
+		self.model.add(Conv2D(30,(5,5),padding='same'))
 		self.model.add(Activation('sigmoid'))
 		self.model.add(MaxPooling2D(pool_size=(1,1)))
 
@@ -173,22 +173,30 @@ class cnn_dev:
 			best_accuracy = 0.0
 			best_val_accuracy = 0.0
 
+			temp = samples
+
 			for i in range(0,self.no_epoch):
 				print('Iteration == ',i)
 				start = 0
-				total = 0
 				for j in range(0,samples):
 					
-					if total == samples:
+					if samples < 0:
 						break
 					else:
 						end = start + train_sample
 
+						
+
 						#need a condition to sorting out if in case number of samples are few in a block
-						if (end - start) < train_sample:
-							samples_size = end - start
+						if samples < train_sample:
+							samples_size = samples
+							samples = samples - train_sample
+							print('Sample : ',samples_size)
 						else:
 							samples_size = train_sample
+
+							samples = samples - train_sample
+
 						#end
 
 						X_train, Y_train = self.load_data(samples_start=start, samples_end=end, samples=samples_size)
@@ -197,21 +205,20 @@ class cnn_dev:
 						print(accuracy.history.keys())
 
 						iter_accuracy = op.itemgetter(0)(accuracy.history['acc'])
-						iter_val_accuracy = op.itemgetter(0)(accuracy.history['val_acc'])
+						#iter_val_accuracy = op.itemgetter(0)(accuracy.history['val_acc'])
 						self.save_model()
 						start = end
 						print('Block :',j,' Number of samples : ',samples_size)
-
-						total = total + samples_size
+				samples = temp
 
 				if (best_accuracy < iter_accuracy):
 					best_accuracy = iter_accuracy
 
-				if (best_val_accuracy < iter_val_accuracy):
-					best_val_accuracy = iter_val_accuracy
+				#if (best_val_accuracy < iter_val_accuracy):
+					#best_val_accuracy = iter_val_accuracy
 			
 			print('After Interation best training accuracy is : ',self.best_accuracy)
-			print('After Interation best validation accuracy is : ',self.best_val_accuracy)
+			#print('After Interation best validation accuracy is : ',self.best_val_accuracy)
 
 	def save_model(self):
 		model_json = self.model.to_json()
