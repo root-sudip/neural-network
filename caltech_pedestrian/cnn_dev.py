@@ -217,8 +217,8 @@ class cnn_dev:
 						print('Block :',j,' Number of samples : ',samples_size)
 						count = count + 1
 
-					avg_accuracy = t_accuracy/count
-					print('Avg Accuracy : ',avg_accuracy)
+				avg_accuracy = t_accuracy/count
+				print('Avg Accuracy : ',avg_accuracy)
 
 				samples = temp
 
