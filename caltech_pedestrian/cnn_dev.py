@@ -1,3 +1,12 @@
+"""
+command to run: $python3 cnn_dev.py train training/ validation/
+
+
+
+"""
+
+
+
 import sys
 import os
 import operator as op
@@ -86,7 +95,7 @@ class cnn_dev:
 					#print()
 
 					print("\rFile Name : ",temp[0].replace('[','').replace("'",""),"  Label : ",temp[1].replace(']','').replace("'",""),end="")
-					img_array = np.asarray(Image.open(temp[0].replace('[','').replace("'",'')).resize((32,32), Image.ANTIALIAS))
+					img_array = np.asarray(Image.open(temp[0].replace('[','').replace("'",'')).resize((256,256), Image.ANTIALIAS))
 					training_data_list.append(img_array)
 					Y_train_d[j] = int(temp[1].replace(']','').replace("'",""))
 					i = i + 1
@@ -98,60 +107,53 @@ class cnn_dev:
 			print('Total number of file read : ',j)
 
 			array_list_l = np.asarray(training_data_list)
-			X_train = np.reshape(array_list_l,(samples,32,32,3))
+			X_train = np.reshape(array_list_l,(samples,256,256,3))
 			Y_train = np_utils.to_categorical(Y_train_d)
 
 			return X_train, Y_train
 
-	# def load_data_for_validation(self,path_name,samples=None):
-	# 	if samples == None:
-	# 		print('Enter number of samples')
-	# 	else:
-	# 		Y_train_d = np.zeros([samples])
+	def load_data_for_validation(self,path_name,samples=None):
+		if samples == None:
+			print('Enter number of samples')
+		else:
+			validation_data_list = []
+			Y_validation_d = np.zeros([samples])
+			print('Loading validation data')
 
-	# 		i = 0
-	# 		j = 0
-	# 		for path in self.list_csv_training:
+			j = 0
+			fl = open(path_name,'r')
+			csv_reader = csv.reader(fl)
 
-	# 			if samples_start>= i <=samples_end:
+			for row in csv_reader:
 
-	# 				temp = path.split(',')
-	# 				print('Path : ',temp[0].replace('[',''))
-	# 				print('Label :',temp[1].replace(']',''))
+					print("\rFile Name : ",row[0],"  Label : ",row[1],end="")
+					img_array = np.asarray(Image.open(row[0]).resize((256,256), Image.ANTIALIAS))
+					validation_data_list.append(img_array)
+					Y_validation_d[j] = int(row[1])
+					j = j + 1
 
-	# 				print("\rFile Name : ",row[0],"  Label : ",row[1],end="")
-	# 	 			img_array = np.asarray(Image.open(temp[0]).resize((256,256), Image.ANTIALIAS))
-	# 	 			training_data_list.append(img_array)
-	# 	 			Y_train_d[j] = temp[1]
+			print('Total number of file read : ',j)
 
-	# 				i = i + 1
-	# 				j = j + 1
-	# 			else:
-	# 				i = i + 1
+			array_list_l = np.asarray(validation_data_list)
+			self.X_validation = np.reshape(array_list_l,(samples,256,256,3))
+			self.Y_validation = np_utils.to_categorical(Y_validation_d)
 
-	# 		print('Total number of file read : ',j)
-
-	# 		array_list_l = np.asarray(training_data_list)
-	# 		X_train = np.reshape(array_list_l,(samples,256,256,3))
-	# 		Y_train = np_utils.to_categorical(Y_train_d)
-
-	# 		return X_train, Y_train
 
 
 	def create_model(self):
 		self.model = Sequential()
 		
-		self.model.add(Conv2D(10,(5,5),padding='same',input_shape=(32,32,3)))
+		self.model.add(Conv2D(10,(15,15),padding='same',input_shape=(256,256,3)))
 		self.model.add(Activation('sigmoid'))
-		self.model.add(MaxPooling2D(pool_size=(3,3)))
+		self.model.add(MaxPooling2D(pool_size=(8,8)))
 
-		self.model.add(Conv2D(20,(5,5),padding='same'))
+		self.model.add(Conv2D(20,(15,15),padding='same'))
 		self.model.add(Activation('sigmoid'))
-		self.model.add(MaxPooling2D(pool_size=(3,3)))
+		self.model.add(MaxPooling2D(pool_size=(4,4)))
 
-		self.model.add(Conv2D(30,(5,5),padding='same'))
+		self.model.add(Conv2D(30,(15,15),padding='same'))
 		self.model.add(Activation('sigmoid'))
-		self.model.add(MaxPooling2D(pool_size=(1,1)))
+		self.model.add(MaxPooling2D(pool_size=(4,4)))
 
 		#model.add(Dropout(0.25))
 
@@ -201,7 +203,7 @@ class cnn_dev:
 
 						X_train, Y_train = self.load_data(samples_start=start, samples_end=end, samples=samples_size)
 						#,validation_data = (self.X_validation, self.Y_validation), verbose = 1
-						accuracy = self.model.fit(X_train, Y_train, nb_epoch=1,batch_size = 100)
+						accuracy = self.model.fit(X_train, Y_train, epochs=1,batch_size = 100,validation_data = (self.X_validation, self.Y_validation), verbose = 1)
 						print(accuracy.history.keys())
 
 						iter_accuracy = op.itemgetter(0)(accuracy.history['acc'])
@@ -240,7 +242,7 @@ ob = cnn_dev()
 
 if sys.argv[1] == 'train':
 	ob.load_path()
-	#ob.load_data_for_validation(path_name=sys.argv[3],samples=40000)
+	ob.load_data_for_validation(path_name=sys.argv[3],samples=40000)
 	ob.create_model()
 	ob.train_model(samples=80717,train_sample=5000)
 	ob.save_model()
