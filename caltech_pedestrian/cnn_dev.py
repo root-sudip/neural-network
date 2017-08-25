@@ -267,7 +267,7 @@ if sys.argv[1] == 'train':
 	ob.save_model()
 
 elif sys.argv[1] == 'test':
-	pas
+	pass
 
 elif sys.argv[1] == '':
 	print('You should use train/test.')
