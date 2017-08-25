@@ -94,6 +94,7 @@ class cnn_dev:
 					#print()
 
 					print("\033[44m"+"\rFile Name : ",temp[0].replace('[','').replace("'",""),"  Label : ",temp[1].replace(']','').replace("'",""),"\033[0m",end="")
+					print()
 					img_array = np.asarray(Image.open(temp[0].replace('[','').replace("'",'')).resize((256,256), Image.ANTIALIAS))
 					training_data_list.append(img_array)
 					Y_train_d[j] = int(temp[1].replace(']','').replace("'",""))
@@ -125,7 +126,6 @@ class cnn_dev:
 
 			for row in csv_reader:
 
-					#print('Validation loss : ',score[0],'\033[0m')
 					print("\033[44m"+"\rFile Name : ",row[0],"  Label : ",row[1],"\033[0m",end="")
 					img_array = np.asarray(Image.open(row[0]).resize((256,256), Image.ANTIALIAS))
 					validation_data_list.append(img_array)
@@ -223,7 +223,6 @@ class cnn_dev:
 				print('\033[92m'+'Avg Accuracy : ',avg_accuracy,'\033[0m')
 
 
-				#print('Avg Accuracy : ',avg_accuracy)
 
 				samples = temp
 
@@ -232,8 +231,6 @@ class cnn_dev:
 				print('\033[92m'+'Validation loss : ',score[0],'\033[0m')
 				print('\033[92m'+'Validation accuracy : ',score[1],'\033[0m')
 
-				#print('Validation loss:', score[0])
-				#print('Validation accuracy:', score[1])
 
 				if (best_accuracy < avg_accuracy):
 					best_accuracy = iter_accuracy
