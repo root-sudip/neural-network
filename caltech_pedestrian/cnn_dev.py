@@ -1,11 +1,10 @@
 """
-command to run: $python3 cnn_dev.py train training/ validation/
+command to run: $python3 cnn_dev.py train training/ v_label.csv
 
-
+Copyright (C) 2017 Sudip Das <d.sudip47@gmail.com>.
+Licence : Indian Statistical Institute
 
 """
-
-
 
 import sys
 import os
