@@ -238,8 +238,8 @@ class cnn_dev:
 				if (best_val_accuracy < score[1]):
 					best_val_accuracy = score[1]
 			
-			print('After Interation best training accuracy is : ',self.best_accuracy)
-			print('After Interation best validation accuracy is : ',self.best_val_accuracy)
+			print('After Interation best training accuracy is : ',best_accuracy)
+			print('After Interation best validation accuracy is : ',best_val_accuracy)
 
 	def save_model(self):
 		model_json = self.model.to_json()
