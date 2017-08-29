@@ -41,11 +41,15 @@ class cnn_dev:
 			self.no_epoch = no_epoch
 
 	def label(self,filename=None):
+		print('Labeling ... ')
 		file = open('v_label.csv','a')
+
+		print()
 		for dirName, subdirList, fileList in os.walk(sys.argv[2]): 
 			l = 0
 			for subdir_name in subdirList:
 				for fname in os.listdir(dirName+'/'+subdir_name+'/'):
+					print("\033[44m"+"\rFile Name : ",fname,"\033[0m",end="")
 					file.write(dirName)
 					file.write(subdir_name)
 					file.write("/")
@@ -54,6 +58,7 @@ class cnn_dev:
 					file.write(str(l))
 					file.write("\n")
 				l = l + 1
+			print()
 		file.close()
 
 
