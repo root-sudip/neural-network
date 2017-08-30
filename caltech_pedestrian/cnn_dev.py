@@ -274,41 +274,40 @@ class cnn_dev:
 		self.model = model_from_json(self.model)
 		self.model.load_weights("model/model_cnn.h5")
 
-	def test_model(self,filename,frame_size):
+	def test_model(self,filename,frame_size, strides):
 
 		#.resize((32,32), Image.ANTIALIAS)
 
 		img = np.asarray(Image.open(filename))
 		print('Imput image shape for testing : ',img.shape)
-		height = img.shape[0]
-		width = img.shape[1]
+		width = img.shape[0]
+		height = img.shape[1]
 		p = 0
-		for i in range(0,height,frame_size[0]):
-			for j in range(0,width,frame_size[1]):
-				#try:
-				crop = np.asarray(Image.fromarray(img[i:i+frame_size[0],j:j+frame_size[1]]).resize((256,256), Image.ANTIALIAS))
-
-
-				croped_image = np.reshape(crop,(1,256,256,3))
-				#print('croped image shape : ',croped_image.shape)
-
-				classes = self.model.predict_classes(croped_image, batch_size=1)
-				
-
-				cv.rectangle(img, (i, j), (i + frame_size[0], j + frame_size[1]), (0, 0, 255), 1)
-				
-
-				if classes == 0:
-
-					p = p + 1
+		for i in range(0,height,strides[1]):
+			for j in range(0,width,strides[0]):
+				try:
 					cv.rectangle(img, (i, j), (i + frame_size[0], j + frame_size[1]), (255, 0, 0), 1)
-				else:
-					cv.rectangle(img, (i, j), (i + frame_size[0], j + frame_size[1]), (0, 0, 255), 1)
-				print("\rPediction : ",classes," Total nuber of pedestrain : ",p ,end="")
+					crop = np.asarray(Image.fromarray(img[i:i+frame_size[0],j:j+frame_size[1]]).resize((256,256), Image.ANTIALIAS))
+
+
+					croped_image = np.reshape(crop,(1,256,256,3))
+					# #print('croped image shape : ',croped_image.shape)
+
+					classes = self.model.predict_classes(croped_image, batch_size=1)
+				
+
+					if classes == 0:
+
+						p = p + 1
+						cv.rectangle(img, (i, j), (i + frame_size[0], j + frame_size[1]), (255, 0, 0), 1)
+					else:
+						cv.rectangle(img, (i, j), (i + frame_size[0], j + frame_size[1]), (0, 0, 255), 1)
+						
+					print("\rPediction : ",classes," Total nuber of pedestrain : ",p ,end="")
 					
-				#except ValueError:
+				except ValueError:
 					#print('except')
-					#pass
+					pass
 		print()
 		#print('Total number of pedestrian : ',p)
 
@@ -326,7 +325,7 @@ if sys.argv[1] == 'train':
 
 elif sys.argv[1] == 'test':
 	ob.load_model()
-	ob.test_model(filename=sys.argv[2],frame_size=(40,100))
+	ob.test_model(filename=sys.argv[2],frame_size=(40,70),strides=(10,10))
 
 elif sys.argv[1] == '':
 	print('You should use train/test.')
