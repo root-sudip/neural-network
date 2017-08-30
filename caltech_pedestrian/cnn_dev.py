@@ -27,6 +27,9 @@ from keras.layers import Conv2D, MaxPooling2D
 from keras.models import model_from_json
 
 
+from PIL import ImageFont, ImageDraw, ImageEnhance
+import cv2 as cv
+
 import readline
 from os import listdir
 
@@ -100,7 +103,7 @@ class cnn_dev:
 
 					print("\033[44m"+"\rFile Name : ",temp[0].replace('[','').replace("'",""),"  Label : ",temp[1].replace(']','').replace("'",""),"\033[0m",end="")
 					# print()
-					img_array = np.asarray(Image.open(temp[0].replace('[','').replace("'",'')).resize((32,32), Image.ANTIALIAS))
+					img_array = np.asarray(Image.open(temp[0].replace('[','').replace("'",'')).resize((64,32), Image.ANTIALIAS))
 					training_data_list.append(img_array)
 					Y_train_d[j] = int(temp[1].replace(']','').replace("'",""))
 					i = i + 1
@@ -112,7 +115,7 @@ class cnn_dev:
 			print('Total number of file read : ',j)
 
 			array_list_l = np.asarray(training_data_list)
-			X_train = np.reshape(array_list_l,(samples,32,32,3))
+			X_train = np.reshape(array_list_l,(samples,64,32,3))
 			Y_train = np_utils.to_categorical(Y_train_d)
 
 			return X_train, Y_train
@@ -132,7 +135,7 @@ class cnn_dev:
 			for row in csv_reader:
 
 					print("\033[44m"+"\rFile Name : ",row[0],"  Label : ",row[1],"\033[0m",end="")
-					img_array = np.asarray(Image.open(row[0]).resize((32,32), Image.ANTIALIAS))
+					img_array = np.asarray(Image.open(row[0]).resize((64,32), Image.ANTIALIAS))
 					validation_data_list.append(img_array)
 					Y_validation_d[j] = int(row[1])
 					j = j + 1
@@ -141,7 +144,7 @@ class cnn_dev:
 
 			array_list_l = np.asarray(validation_data_list)
 			print(array_list_l.shape)
-			self.X_validation = np.reshape(array_list_l,(samples,32,32,3))
+			self.X_validation = np.reshape(array_list_l,(samples,64,32,3))
 			self.Y_validation = np_utils.to_categorical(Y_validation_d)
 
 
@@ -149,7 +152,7 @@ class cnn_dev:
 	def create_model(self):
 		self.model = Sequential()
 		
-		self.model.add(Conv2D(10,(5,5),padding='same', strides=4, input_shape=(32,32,3)))
+		self.model.add(Conv2D(10,(5,5),padding='same', strides=4, input_shape=(64,32,3)))
 		self.model.add(Activation('sigmoid'))
 		self.model.add(MaxPooling2D(pool_size=(4,4),strides=2))
 
@@ -265,14 +268,52 @@ class cnn_dev:
 		self.model.save_weights("model_cnn.h5")
 
 	def load_model(self):
-		json_file = open('model_cnn.json', 'r')
+		json_file = open('model/model_cnn.json', 'r')
 		self.model = json_file.read()
 		json_file.close()
 		self.model = model_from_json(self.model)
-		self.model.load_weights("model_cnn.h5")
+		self.model.load_weights("model/model_cnn.h5")
 
-	def test_model(self):
-		pass
+	def test_model(self,filename,frame_size):
+
+		#.resize((32,32), Image.ANTIALIAS)
+
+		img = np.asarray(Image.open(filename))
+		print('Imput image shape for testing : ',img.shape)
+		height = img.shape[0]
+		width = img.shape[1]
+		p = 0
+		for i in range(0,height,frame_size[0]):
+			for j in range(0,width,frame_size[1]):
+				#try:
+				crop = np.asarray(Image.fromarray(img[i:i+frame_size[0],j:j+frame_size[1]]).resize((256,256), Image.ANTIALIAS))
+
+
+				croped_image = np.reshape(crop,(1,256,256,3))
+				#print('croped image shape : ',croped_image.shape)
+
+				classes = self.model.predict_classes(croped_image, batch_size=1)
+				
+
+				cv.rectangle(img, (i, j), (i + frame_size[0], j + frame_size[1]), (0, 0, 255), 1)
+				
+
+				if classes == 0:
+
+					p = p + 1
+					cv.rectangle(img, (i, j), (i + frame_size[0], j + frame_size[1]), (255, 0, 0), 1)
+				else:
+					cv.rectangle(img, (i, j), (i + frame_size[0], j + frame_size[1]), (0, 0, 255), 1)
+				print("\rPediction : ",classes," Total nuber of pedestrain : ",p ,end="")
+					
+				#except ValueError:
+					#print('except')
+					#pass
+		print()
+		#print('Total number of pedestrian : ',p)
+
+		out = Image.fromarray(img)
+		out.save("rectangle.png")
 
 ob = cnn_dev()
 
@@ -284,7 +325,8 @@ if sys.argv[1] == 'train':
 	ob.save_model()
 
 elif sys.argv[1] == 'test':
-	pass
+	ob.load_model()
+	ob.test_model(filename=sys.argv[2],frame_size=(40,100))
 
 elif sys.argv[1] == '':
 	print('You should use train/test.')
