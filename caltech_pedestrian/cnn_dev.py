@@ -103,7 +103,7 @@ class cnn_dev:
 
 					print("\033[44m"+"\rFile Name : ",temp[0].replace('[','').replace("'",""),"  Label : ",temp[1].replace(']','').replace("'",""),"\033[0m",end="")
 					# print()
-					img_array = np.asarray(Image.open(temp[0].replace('[','').replace("'",'')).resize((64,32), Image.ANTIALIAS))
+					img_array = np.asarray(Image.open(temp[0].replace('[','').replace("'",'')).resize((32,32), Image.ANTIALIAS))
 					training_data_list.append(img_array)
 					Y_train_d[j] = int(temp[1].replace(']','').replace("'",""))
 					i = i + 1
@@ -115,7 +115,7 @@ class cnn_dev:
 			print('Total number of file read : ',j)
 
 			array_list_l = np.asarray(training_data_list)
-			X_train = np.reshape(array_list_l,(samples,64,32,3))
+			X_train = np.reshape(array_list_l,(samples,32,32,3))
 			Y_train = np_utils.to_categorical(Y_train_d)
 
 			return X_train, Y_train
@@ -135,7 +135,7 @@ class cnn_dev:
 			for row in csv_reader:
 
 					print("\033[44m"+"\rFile Name : ",row[0],"  Label : ",row[1],"\033[0m",end="")
-					img_array = np.asarray(Image.open(row[0]).resize((64,32), Image.ANTIALIAS))
+					img_array = np.asarray(Image.open(row[0]).resize((32,32), Image.ANTIALIAS))
 					validation_data_list.append(img_array)
 					Y_validation_d[j] = int(row[1])
 					j = j + 1
@@ -144,7 +144,7 @@ class cnn_dev:
 
 			array_list_l = np.asarray(validation_data_list)
 			print(array_list_l.shape)
-			self.X_validation = np.reshape(array_list_l,(samples,64,32,3))
+			self.X_validation = np.reshape(array_list_l,(samples,32,32,3))
 			self.Y_validation = np_utils.to_categorical(Y_validation_d)
 
 
@@ -152,7 +152,7 @@ class cnn_dev:
 	def create_model(self):
 		self.model = Sequential()
 		
-		self.model.add(Conv2D(10,(5,5),padding='same', strides=4, input_shape=(64,32,3)))
+		self.model.add(Conv2D(10,(5,5),padding='same', strides=4, input_shape=(32,32,3)))
 		self.model.add(Activation('sigmoid'))
 		self.model.add(MaxPooling2D(pool_size=(4,4),strides=2))
 
@@ -174,7 +174,7 @@ class cnn_dev:
 
 		self.model.add(Dense(20))
 
-		self.model.add(Dropout(0.25))
+		#self.model.add(Dropout(0.25))
 
 		self.model.add(Flatten())
 
@@ -195,6 +195,8 @@ class cnn_dev:
 			best_val_accuracy = 0.0
 
 			temp = samples
+
+			iteration = 0
 
 			for i in range(0,self.no_epoch):
 				print('Iteration == ',i)
@@ -242,7 +244,7 @@ class cnn_dev:
 
 				print('\033[92m'+'Avg Accuracy : ',avg_accuracy,'\033[0m')
 
-
+				iteration = iteration + 1
 
 				samples = temp
 
@@ -258,8 +260,8 @@ class cnn_dev:
 				if (best_val_accuracy < score[1]):
 					best_val_accuracy = score[1]
 			
-			print('After Interation best training accuracy is : ',best_accuracy)
-			print('After Interation best validation accuracy is : ',best_val_accuracy)
+			print('After ',iteration,'th Interation best training accuracy is : ',best_accuracy)
+			print('After',iteration,'th Interation best validation accuracy is : ',best_val_accuracy)
 
 	def save_model(self):
 		model_json = self.model.to_json()
@@ -318,9 +320,9 @@ ob = cnn_dev()
 
 if sys.argv[1] == 'train':
 	ob.load_path()
-	ob.load_data_for_validation(samples=36638)
+	ob.load_data_for_validation(samples=52349)
 	ob.create_model()
-	ob.train_model(samples=70897,train_sample=5000)
+	ob.train_model(samples=291565,train_sample=5000)
 	ob.save_model()
 
 elif sys.argv[1] == 'test':
