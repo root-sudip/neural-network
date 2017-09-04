@@ -14,7 +14,7 @@ import numpy as np
 
 from PIL import Image
 
-import pandas as pd
+#import pandas as pd
 import csv
 
 from keras.models import Sequential
@@ -45,7 +45,7 @@ class cnn_dev:
 
 	def label(self,filename=None):
 		print('Labeling ... ')
-		file = open('v_label.csv','a')
+		file = open('label.csv','a')
 
 		print()
 		for dirName, subdirList, fileList in os.walk(sys.argv[2]): 
@@ -270,11 +270,11 @@ class cnn_dev:
 		self.model.save_weights("model_cnn.h5")
 
 	def load_model(self):
-		json_file = open('model/model_cnn.json', 'r')
+		json_file = open('model_cnn.json', 'r')
 		self.model = json_file.read()
 		json_file.close()
 		self.model = model_from_json(self.model)
-		self.model.load_weights("model/model_cnn.h5")
+		self.model.load_weights("model_cnn.h5")
 
 	def test_model(self,filename,frame_size, strides):
 
@@ -288,11 +288,11 @@ class cnn_dev:
 		for i in range(0,height,strides[1]):
 			for j in range(0,width,strides[0]):
 				try:
-					cv.rectangle(img, (i, j), (i + frame_size[0], j + frame_size[1]), (255, 0, 0), 1)
-					crop = np.asarray(Image.fromarray(img[i:i+frame_size[0],j:j+frame_size[1]]).resize((256,256), Image.ANTIALIAS))
+					#cv.rectangle(img, (i, j), (i + frame_size[0], j + frame_size[1]), (255, 0, 0), 1)
+					crop = np.asarray(Image.fromarray(img[i:i+frame_size[0],j:j+frame_size[1]]).resize((32,32), Image.ANTIALIAS))
 
 
-					croped_image = np.reshape(crop,(1,256,256,3))
+					croped_image = np.reshape(crop,(1,32,32,3))
 					# #print('croped image shape : ',croped_image.shape)
 
 					classes = self.model.predict_classes(croped_image, batch_size=1)
@@ -303,7 +303,8 @@ class cnn_dev:
 						p = p + 1
 						cv.rectangle(img, (i, j), (i + frame_size[0], j + frame_size[1]), (255, 0, 0), 1)
 					else:
-						cv.rectangle(img, (i, j), (i + frame_size[0], j + frame_size[1]), (0, 0, 255), 1)
+						#cv.rectangle(img, (i, j), (i + frame_size[0], j + frame_size[1]), (0, 0, 255), 1)
+						pass
 						
 					print("\rPediction : ",classes," Total nuber of pedestrain : ",p ,end="")
 					
@@ -322,12 +323,12 @@ if sys.argv[1] == 'train':
 	ob.load_path()
 	ob.load_data_for_validation(samples=52349)
 	ob.create_model()
-	ob.train_model(samples=291565,train_sample=5000)
+	ob.train_model(samples=461971,train_sample=5000)
 	ob.save_model()
 
 elif sys.argv[1] == 'test':
 	ob.load_model()
-	ob.test_model(filename=sys.argv[2],frame_size=(40,70),strides=(10,10))
+	ob.test_model(filename=sys.argv[2],frame_size=(90,170),strides=(50,60))
 
 elif sys.argv[1] == '':
 	print('You should use train/test.')
