@@ -323,7 +323,7 @@ if sys.argv[1] == 'train':
 	ob.load_path()
 	ob.load_data_for_validation(samples=52349)
 	ob.create_model()
-	ob.train_model(samples=461971,train_sample=5000)
+	ob.train_model(samples=461970,train_sample=5000)
 	ob.save_model()
 
 elif sys.argv[1] == 'test':
