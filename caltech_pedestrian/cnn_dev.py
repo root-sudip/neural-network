@@ -169,8 +169,12 @@ class cnn_dev:
 		#self.model.add(MaxPooling2D(pool_size=(2,2),strides=1))
 
 
-		self.model.add(Conv2D(10,(7,7),padding='same',strides=1))
-		self.model.add(Activation('sigmoid'))
+		#self.model.add(Conv2D(10,(7,7),padding='same',strides=1))
+		#self.model.add(Activation('sigmoid'))
+
+		# self.model.add(Conv2D(15,(7,7),padding='same',strides=1))
+		# self.model.add(Activation('sigmoid'))
+
 
 		self.model.add(Dense(20))
 
@@ -250,6 +254,8 @@ class cnn_dev:
 
 				score = self.model.evaluate(self.X_validation, self.Y_validation, batch_size=100, verbose=1)
 
+				print()
+				
 				print('\033[92m'+'Validation loss : ',score[0],'\033[0m')
 				print('\033[92m'+'Validation accuracy : ',score[1],'\033[0m')
 
@@ -260,8 +266,8 @@ class cnn_dev:
 				if (best_val_accuracy < score[1]):
 					best_val_accuracy = score[1]
 			
-			print('After ',iteration,'th Interation best training accuracy is : ',best_accuracy)
-			print('After',iteration,'th Interation best validation accuracy is : ',best_val_accuracy)
+			print('After ',iteration,'th iteration best training accuracy is : ',best_accuracy)
+			print('After',iteration,'th iteration best validation accuracy is : ',best_val_accuracy)
 
 	def save_model(self):
 		model_json = self.model.to_json()
@@ -317,13 +323,13 @@ class cnn_dev:
 		out = Image.fromarray(img)
 		out.save("rectangle.png")
 
-ob = cnn_dev()
+ob = cnn_dev(20)
 
 if sys.argv[1] == 'train':
 	ob.load_path()
 	ob.load_data_for_validation(samples=52349)
 	ob.create_model()
-	ob.train_model(samples=291563,train_sample=5000)
+	ob.train_model(samples=291566,train_sample=5000)
 	ob.save_model()
 
 elif sys.argv[1] == 'test':
