@@ -357,6 +357,7 @@ class cnn_dev:
 								previous = new
 								new[:] = []
 							else:
+								new[:] = []
 								pass
 								#previous = new
 							p_iou = p_iou + 1
