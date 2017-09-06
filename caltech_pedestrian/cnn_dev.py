@@ -355,7 +355,11 @@ class cnn_dev:
 							#end
 
 							iou = self.intersection_over_union()
-							cv.rectangle(img, (i, j), (i + frame_size[0], j + frame_size[1]), (255, 0, 0), 1)
+
+							if iou > .40:
+								cv.rectangle(img, (i, j), (i + frame_size[0], j + frame_size[1]), (255, 0, 0), 1)
+							else:
+								pass
 
 						else:
 							cv.rectangle(img, (i, j), (i + frame_size[0], j + frame_size[1]), (255, 0, 0), 1)
