@@ -363,6 +363,7 @@ class cnn_dev:
 								previous = new
 							else:
 								previous = new
+							p_iou = p_iou + 1
 
 						else:
 							cv.rectangle(img, (i, j), (i + frame_size[0], j + frame_size[1]), (255, 0, 0), 1)
