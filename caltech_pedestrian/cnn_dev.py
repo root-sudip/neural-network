@@ -351,6 +351,13 @@ class cnn_dev:
 						else:
 							cv.rectangle(img, (i, j), (i + frame_size[0], j + frame_size[1]), (255, 0, 0), 1)
 
+							#making the list of coordinates of previous box
+							previous.append(i)
+							previous.append(j)
+							previous.append(i + frame_size[0])
+							previous.append(j + frame_size[1])
+							#end
+
 							p_iou = p_iou + 1
 							p = p + 1
 						#end conditions
