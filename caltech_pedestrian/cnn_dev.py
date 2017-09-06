@@ -35,6 +35,13 @@ from os import listdir
 
 from random import shuffle
 
+
+
+
+
+
+
+
 class cnn_dev:
 	def __init__(self,no_epoch=None):
 		print('CNN object initialized ...')
@@ -42,6 +49,30 @@ class cnn_dev:
 			self.no_epoch = 10 # by default no of epoch 150
 		else:
 			self.no_epoch = no_epoch
+
+
+	def intersection_over_union(boxA, boxB):
+		# determine the (x, y)-coordinates of the intersection rectangle
+		xA = max(boxA[0], boxB[0])
+		yA = max(boxA[1], boxB[1])
+		xB = min(boxA[2], boxB[2])
+		yB = min(boxA[3], boxB[3])
+ 
+		# compute the area of intersection rectangle
+		interArea = (xB - xA + 1) * (yB - yA + 1)
+ 
+		# compute the area of both the prediction and ground-truth
+		# rectangles
+		boxAArea = (boxA[2] - boxA[0] + 1) * (boxA[3] - boxA[1] + 1)
+		boxBArea = (boxB[2] - boxB[0] + 1) * (boxB[3] - boxB[1] + 1)
+ 
+		# compute the intersection over union by taking the intersection
+		# area and dividing it by the sum of prediction + ground-truth
+		# areas - the interesection area
+		iou = interArea / float(boxAArea + boxBArea - interArea)
+ 
+		# return the intersection over union value
+		return iou
 
 	def label(self,filename=None):
 		print('Labeling ... ')
@@ -297,6 +328,11 @@ class cnn_dev:
 					#cv.rectangle(img, (i, j), (i + frame_size[0], j + frame_size[1]), (255, 0, 0), 1)
 					crop = np.asarray(Image.fromarray(img[i:i+frame_size[0],j:j+frame_size[1]]).resize((32,32), Image.ANTIALIAS))
 
+					#need a condition to reduce the number of boxes
+					iou =self.intersection_over_union()
+
+
+					#end conditions
 
 					croped_image = np.reshape(crop,(1,32,32,3))
 					# #print('croped image shape : ',croped_image.shape)
@@ -334,7 +370,7 @@ if sys.argv[1] == 'train':
 
 elif sys.argv[1] == 'test':
 	ob.load_model()
-	ob.test_model(filename=sys.argv[2],frame_size=(90,170),strides=(50,60))
+	ob.test_model(filename=sys.argv[2],frame_size=(22,42),strides=(30,10))
 
 elif sys.argv[1] == '':
 	print('You should use train/test.')
