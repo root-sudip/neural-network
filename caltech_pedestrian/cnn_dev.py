@@ -358,8 +358,9 @@ class cnn_dev:
 
 							if iou > .40:
 								cv.rectangle(img, (i, j), (i + frame_size[0], j + frame_size[1]), (255, 0, 0), 1)
+								previous = new
 							else:
-								pass
+								previous = new
 
 						else:
 							cv.rectangle(img, (i, j), (i + frame_size[0], j + frame_size[1]), (255, 0, 0), 1)
