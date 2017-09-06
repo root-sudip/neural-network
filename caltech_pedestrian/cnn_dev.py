@@ -352,9 +352,10 @@ class cnn_dev:
 							iou = self.intersection_over_union(previous,new) * 100
 							print('IOU : ',iou)
 
-							if iou <= 40.0:
+							if iou <= 100.0:
 								cv.rectangle(img, (i, j), (i + frame_size[0], j + frame_size[1]), (255, 0, 0), 1)
 								previous = new
+								new[:] = []
 							else:
 								pass
 								#previous = new
