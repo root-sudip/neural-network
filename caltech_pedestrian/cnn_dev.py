@@ -346,7 +346,6 @@ class cnn_dev:
 						#need a condition to reduce the number of boxes
 
 						if p_iou > 0:
-							p = p + 1
 
 							#making the list of coordinates of new box
 							new.append(i)
@@ -355,15 +354,16 @@ class cnn_dev:
 							new.append(j + frame_size[1])
 							#end
 
-							iou = self.intersection_over_union(previous,new)
+							iou = self.intersection_over_union(previous,new) * 100
 							print('IOU : ',iou)
 
-							if iou > .30:
+							if iou <= 40.0:
 								cv.rectangle(img, (i, j), (i + frame_size[0], j + frame_size[1]), (255, 0, 0), 1)
-								previous = new
+								# previous = new
 							else:
 								previous = new
 							p_iou = p_iou + 1
+							p = p + 1
 
 						else:
 							cv.rectangle(img, (i, j), (i + frame_size[0], j + frame_size[1]), (255, 0, 0), 1)
