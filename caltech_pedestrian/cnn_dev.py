@@ -328,15 +328,11 @@ class cnn_dev:
 				try:
 					#cv.rectangle(img, (i, j), (i + frame_size[0], j + frame_size[1]), (255, 0, 0), 1)
 					crop = np.asarray(Image.fromarray(img[i:i+frame_size[0],j:j+frame_size[1]]).resize((32,32), Image.ANTIALIAS))
-
-				
-
 					croped_image = np.reshape(crop,(1,32,32,3))
 					# #print('croped image shape : ',croped_image.shape)
 
 					classes = self.model.predict_classes(croped_image, batch_size=1)
 				
-
 					if classes == 0:
 						#need a condition to reduce the number of boxes
 
@@ -375,9 +371,7 @@ class cnn_dev:
 
 							p_iou = p_iou + 1
 							p = p + 1
-
 						#end conditions
-
 					else:
 						#cv.rectangle(img, (i, j), (i + frame_size[0], j + frame_size[1]), (0, 0, 255), 1)
 						pass
