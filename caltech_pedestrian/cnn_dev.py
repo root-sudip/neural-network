@@ -324,6 +324,10 @@ class cnn_dev:
 		height = img.shape[1]
 		p = 0
 		p_iou = 0
+
+		previous = []
+		new = []
+
 		for i in range(0,height,strides[1]):
 			for j in range(0,width,strides[0]):
 				try:
@@ -340,9 +344,6 @@ class cnn_dev:
 
 					if classes == 0:
 						#need a condition to reduce the number of boxes
-
-						previous = []
-						new = []
 
 						if p_iou > 0:
 							p = p + 1
@@ -374,6 +375,7 @@ class cnn_dev:
 
 							p_iou = p_iou + 1
 							p = p + 1
+							
 						#end conditions
 
 					else:
