@@ -37,11 +37,6 @@ from random import shuffle
 
 
 
-
-
-
-
-
 class cnn_dev:
 	def __init__(self,no_epoch=None):
 		print('CNN object initialized ...')
@@ -359,9 +354,10 @@ class cnn_dev:
 
 							if iou <= 40.0:
 								cv.rectangle(img, (i, j), (i + frame_size[0], j + frame_size[1]), (255, 0, 0), 1)
-								# previous = new
-							else:
 								previous = new
+							else:
+								pass
+								#previous = new
 							p_iou = p_iou + 1
 							p = p + 1
 
