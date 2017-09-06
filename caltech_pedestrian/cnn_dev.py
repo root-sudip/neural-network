@@ -328,11 +328,7 @@ class cnn_dev:
 					#cv.rectangle(img, (i, j), (i + frame_size[0], j + frame_size[1]), (255, 0, 0), 1)
 					crop = np.asarray(Image.fromarray(img[i:i+frame_size[0],j:j+frame_size[1]]).resize((32,32), Image.ANTIALIAS))
 
-					#need a condition to reduce the number of boxes
-					iou =self.intersection_over_union()
-
-
-					#end conditions
+				
 
 					croped_image = np.reshape(crop,(1,32,32,3))
 					# #print('croped image shape : ',croped_image.shape)
@@ -341,9 +337,13 @@ class cnn_dev:
 				
 
 					if classes == 0:
+						#need a condition to reduce the number of boxes
+						if p > 1:
+							p = p + 1
 
-						p = p + 1
-						cv.rectangle(img, (i, j), (i + frame_size[0], j + frame_size[1]), (255, 0, 0), 1)
+							iou =self.intersection_over_union()
+							cv.rectangle(img, (i, j), (i + frame_size[0], j + frame_size[1]), (255, 0, 0), 1)
+						#end conditions
 					else:
 						#cv.rectangle(img, (i, j), (i + frame_size[0], j + frame_size[1]), (0, 0, 255), 1)
 						pass
