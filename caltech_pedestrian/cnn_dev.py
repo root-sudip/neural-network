@@ -317,11 +317,13 @@ class cnn_dev:
 
 		#.resize((32,32), Image.ANTIALIAS)
 
+
 		img = np.asarray(Image.open(filename))
 		print('Imput image shape for testing : ',img.shape)
 		width = img.shape[0]
 		height = img.shape[1]
 		p = 0
+		p_iou = 0
 		for i in range(0,height,strides[1]):
 			for j in range(0,width,strides[0]):
 				try:
@@ -338,12 +340,21 @@ class cnn_dev:
 
 					if classes == 0:
 						#need a condition to reduce the number of boxes
-						if p > 1:
-							p = p + 1
 
+						previous = []
+
+						if p_iou > 0:
+							p = p + 1
 							iou =self.intersection_over_union()
 							cv.rectangle(img, (i, j), (i + frame_size[0], j + frame_size[1]), (255, 0, 0), 1)
+
+						else:
+							cv.rectangle(img, (i, j), (i + frame_size[0], j + frame_size[1]), (255, 0, 0), 1)
+
+							p_iou = p_iou + 1
+							p = p + 1
 						#end conditions
+
 					else:
 						#cv.rectangle(img, (i, j), (i + frame_size[0], j + frame_size[1]), (0, 0, 255), 1)
 						pass
