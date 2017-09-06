@@ -51,7 +51,7 @@ class cnn_dev:
 			self.no_epoch = no_epoch
 
 
-	def intersection_over_union(boxA, boxB):
+	def intersection_over_union(self,boxA, boxB):
 		# determine the (x, y)-coordinates of the intersection rectangle
 		xA = max(boxA[0], boxB[0])
 		yA = max(boxA[1], boxB[1])
@@ -313,7 +313,7 @@ class cnn_dev:
 		self.model = model_from_json(self.model)
 		self.model.load_weights("model_cnn.h5")
 
-	def test_model(self,filename,frame_size, strides):
+	def test_model(self,filename=None,output_filename=None,frame_size=None, strides=None):
 
 		#.resize((32,32), Image.ANTIALIAS)
 
@@ -355,9 +355,10 @@ class cnn_dev:
 							new.append(j + frame_size[1])
 							#end
 
-							iou = self.intersection_over_union()
+							iou = self.intersection_over_union(previous,new)
+							print('IOU : ',iou)
 
-							if iou > .40:
+							if iou > .30:
 								cv.rectangle(img, (i, j), (i + frame_size[0], j + frame_size[1]), (255, 0, 0), 1)
 								previous = new
 							else:
@@ -375,7 +376,7 @@ class cnn_dev:
 
 							p_iou = p_iou + 1
 							p = p + 1
-							
+
 						#end conditions
 
 					else:
@@ -391,7 +392,11 @@ class cnn_dev:
 		#print('Total number of pedestrian : ',p)
 
 		out = Image.fromarray(img)
-		out.save("rectangle.png")
+
+		if output_filename == None:
+			out.save("rectangle.png")
+		else:
+			out.save(output_filename)
 
 ob = cnn_dev(20)
 
@@ -404,7 +409,7 @@ if sys.argv[1] == 'train':
 
 elif sys.argv[1] == 'test':
 	ob.load_model()
-	ob.test_model(filename=sys.argv[2],frame_size=(22,42),strides=(30,10))
+	ob.test_model(filename=sys.argv[2],output_filename=sys.argv[3],frame_size=(22,42),strides=(30,10))
 
 elif sys.argv[1] == '':
 	print('You should use train/test.')
