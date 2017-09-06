@@ -345,7 +345,7 @@ class cnn_dev:
 
 						if p_iou > 0:
 							p = p + 1
-							iou =self.intersection_over_union()
+							iou = self.intersection_over_union()
 							cv.rectangle(img, (i, j), (i + frame_size[0], j + frame_size[1]), (255, 0, 0), 1)
 
 						else:
