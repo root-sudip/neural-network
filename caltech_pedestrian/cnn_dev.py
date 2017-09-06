@@ -323,9 +323,11 @@ class cnn_dev:
 		previous = []
 		new = []
 
+
 		for i in range(0,height,strides[1]):
 			for j in range(0,width,strides[0]):
 				try:
+
 					#cv.rectangle(img, (i, j), (i + frame_size[0], j + frame_size[1]), (255, 0, 0), 1)
 					crop = np.asarray(Image.fromarray(img[i:i+frame_size[0],j:j+frame_size[1]]).resize((32,32), Image.ANTIALIAS))
 					croped_image = np.reshape(crop,(1,32,32,3))
@@ -345,10 +347,12 @@ class cnn_dev:
 							new.append(j + frame_size[1])
 							#end
 
-							iou = self.intersection_over_union(previous,new) * 100
+
+							#print('New : ',new,' Previous : ',previous)
+							iou = self.intersection_over_union(new,previous)
 							print('IOU : ',iou)
 
-							if iou <= 100.0:
+							if iou > .6:
 								cv.rectangle(img, (i, j), (i + frame_size[0], j + frame_size[1]), (255, 0, 0), 1)
 								previous = new
 								new[:] = []
@@ -368,19 +372,18 @@ class cnn_dev:
 							previous.append(i + frame_size[0])
 							previous.append(j + frame_size[1])
 							#end
-
 							p_iou = p_iou + 1
 							p = p + 1
 						#end conditions
+						print("\rPediction : ",classes," Total nuber of pedestrain : ",p,end="")
 					else:
 						#cv.rectangle(img, (i, j), (i + frame_size[0], j + frame_size[1]), (0, 0, 255), 1)
 						pass
 						
-					print("\rPediction : ",classes," Total nuber of pedestrain : ",p ,end="")
-					
 				except ValueError:
 					#print('except')
 					pass
+
 		print()
 		#print('Total number of pedestrian : ',p)
 
