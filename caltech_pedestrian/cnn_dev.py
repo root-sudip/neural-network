@@ -144,7 +144,7 @@ class cnn_dev:
 			X_train = np.reshape(array_list_l,(samples,32,32,3))
 			Y_train = np_utils.to_categorical(Y_train_d)
 
-			return X_train, Y_train
+			return X_train, Y_trai
 
 	def load_data_for_validation(self,samples=None):
 		if samples == None:
@@ -353,7 +353,7 @@ class cnn_dev:
 
 							if iou > .6:
 								cv.rectangle(img, (i, j), (i + frame_size[0], j + frame_size[1]), (255, 0, 0), 1)
-								previous[:] = []
+								self.previous[:] = []
 
 								self.previous.append(self.new[0])  # have some problem
 								self.previous.append(self.new[1])
