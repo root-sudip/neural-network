@@ -144,7 +144,7 @@ class cnn_dev:
 			X_train = np.reshape(array_list_l,(samples,32,32,3))
 			Y_train = np_utils.to_categorical(Y_train_d)
 
-			return X_train, Y_trai
+			return X_train, Y_train
 
 	def load_data_for_validation(self,samples=None):
 		if samples == None:
