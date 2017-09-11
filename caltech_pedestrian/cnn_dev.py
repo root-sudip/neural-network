@@ -339,14 +339,12 @@ class cnn_dev:
 						#need a condition to reduce the number of boxes
 
 						if p_iou > 0:
-
 							#making the list of coordinates of new box
 							new.append(i)
 							new.append(j)
 							new.append(i + frame_size[0])
 							new.append(j + frame_size[1])
 							#end
-
 
 							#print('New : ',new,' Previous : ',previous)
 							iou = self.intersection_over_union(new,previous)
@@ -385,7 +383,7 @@ class cnn_dev:
 					pass
 
 		print()
-		#print('Total number of pedestrian : ',p)
+		print('Total number of pedestrian : ',p)
 
 		out = Image.fromarray(img)
 
