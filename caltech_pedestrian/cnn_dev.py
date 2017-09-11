@@ -347,16 +347,18 @@ class cnn_dev:
 							#end
 
 							#print('New : ',new,' Previous : ',previous)
+							print('Previous : ',previous,' New : ',new)
 							iou = self.intersection_over_union(new,previous)
 							print('IOU : ',iou)
 
 							if iou > .6:
 								cv.rectangle(img, (i, j), (i + frame_size[0], j + frame_size[1]), (255, 0, 0), 1)
+								#previous[:] = []
 								previous = new
 								new[:] = []
 							else:
 								new[:] = []
-								pass
+								# pass
 								#previous = new
 							p_iou = p_iou + 1
 							p = p + 1
@@ -373,7 +375,7 @@ class cnn_dev:
 							p_iou = p_iou + 1
 							p = p + 1
 						#end conditions
-						print("\rPediction : ",classes," Total nuber of pedestrain : ",p,end="")
+						#print("\rPediction : ",classes," Total nuber of pedestrain : ",p,end="")
 					else:
 						#cv.rectangle(img, (i, j), (i + frame_size[0], j + frame_size[1]), (0, 0, 255), 1)
 						pass
