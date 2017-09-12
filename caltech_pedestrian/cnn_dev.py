@@ -138,7 +138,7 @@ class cnn_dev:
 					i = i + 1
 
 			print()
-			print('Total number of file read :  ',j)
+			print('Total number of file read : ',j)
 
 			array_list_l = np.asarray(training_data_list)
 			X_train = np.reshape(array_list_l,(samples,32,32,3))
