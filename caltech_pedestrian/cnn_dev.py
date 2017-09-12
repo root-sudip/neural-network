@@ -420,7 +420,7 @@ if sys.argv[1] == 'train':
 
 elif sys.argv[1] == 'test':
 
-	strat = time.time()
+	strat = time.time() #starting time
 
 	ob.load_model()
 	ob.test_model(filename=sys.argv[2],output_filename=sys.argv[3],frame_size=(22,42),strides=(30,10))
