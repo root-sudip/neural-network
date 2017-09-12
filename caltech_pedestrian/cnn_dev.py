@@ -36,6 +36,9 @@ from os import listdir
 from random import shuffle
 
 
+import time
+
+
 
 class cnn_dev:
 	def __init__(self,no_epoch=None):
@@ -404,15 +407,25 @@ class cnn_dev:
 ob = cnn_dev(20)
 
 if sys.argv[1] == 'train':
+
+	start = time.time() #starting time
+
 	ob.load_path()
 	ob.load_data_for_validation(samples=52349)
 	ob.create_model()
 	ob.train_model(samples=291566,train_sample=5000)
 	ob.save_model()
 
+	print('Total Training Time : ',time.time() - start) #total time taken to complete the training
+
 elif sys.argv[1] == 'test':
+
+	strat = time.time()
+
 	ob.load_model()
 	ob.test_model(filename=sys.argv[2],output_filename=sys.argv[3],frame_size=(22,42),strides=(30,10))
+
+	print('Total testing time : ',time.time() - start) #total time taken to complete the testing
 
 elif sys.argv[1] == '':
 	print('You should use train/test.')
