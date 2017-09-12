@@ -354,7 +354,7 @@ class cnn_dev:
 							iou = self.intersection_over_union(self.new,self.previous)
 							print('IOU : ',iou)
 
-							if iou > .6:
+							if iou > .3:
 								cv.rectangle(img, (i, j), (i + frame_size[0], j + frame_size[1]), (255, 0, 0), 1)
 								self.previous[:] = []
 
@@ -420,7 +420,7 @@ if sys.argv[1] == 'train':
 
 elif sys.argv[1] == 'test':
 
-	strat = time.time() #starting time
+	start = time.time() #starting time
 
 	ob.load_model()
 	ob.test_model(filename=sys.argv[2],output_filename=sys.argv[3],frame_size=(22,42),strides=(30,10))
