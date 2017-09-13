@@ -217,7 +217,9 @@ class cnn_dev:
 		self.model.add(Dense(2))
 		self.model.add(Activation('softmax'))
 
-		self.model.compile(loss='categorical_crossentropy', optimizer='sgd', metrics=['accuracy'])
+		sgd = optimizers.SGD(lr=0.01, decay=1e-6, momentum=0.005, nesterov=True)
+		self.model.compile(loss='categorical_crossentropy', optimizer=sgd, metrics=['accuracy'])
+
 
 	def train_model(self, samples=None,train_sample=None):
 
@@ -340,7 +342,7 @@ class cnn_dev:
 		for i in range(0,height,strides[1]):
 			for j in range(0,width,strides[0]):
 				try:
-					
+
 					coordinates = np.zeros([4])
 
 					#cv.rectangle(img, (i, j), (i + frame_size[0], j + frame_size[1]), (255, 0, 0), 1)
@@ -476,7 +478,7 @@ elif sys.argv[1] == 'test':
 	start = time.time() #starting time
 
 	ob.load_model()
-	ob.test_model(filename=sys.argv[2],output_filename=sys.argv[3],all_box_output=sys.argv[4],frame_size=(100,130),strides=(20,10))
+	ob.test_model(filename=sys.argv[2],output_filename=sys.argv[3],all_box_output=sys.argv[4],frame_size=(120,170),strides=(40,30))
 
 	print('Total testing time : ',time.time() - start) #total time taken to complete the testing
 
