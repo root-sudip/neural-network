@@ -39,6 +39,8 @@ from random import shuffle
 import time
 
 
+from pyimagesearch.nms import non_max_suppression_slow
+
 
 class cnn_dev:
 	def __init__(self,no_epoch=None):
@@ -326,6 +328,11 @@ class cnn_dev:
 		self.previous = []
 		self.new = []
 
+		self.all_coordinates = []
+
+		coordinates = np.zeros(4)
+
+
 
 		for i in range(0,height,strides[1]):
 			for j in range(0,width,strides[0]):
@@ -341,54 +348,67 @@ class cnn_dev:
 					if classes == 0:
 						#need a condition to reduce the number of boxes
 
-						if p_iou > 0:
-							#making the list of coordinates of new box
-							self.new.append(i)
-							self.new.append(j)
-							self.new.append(i + frame_size[0])
-							self.new.append(j + frame_size[1])
-							#end
+					# 	if p_iou > 0:
+					# 		#making the list of coordinates of new box
+					# 		self.new.append(i)
+					# 		self.new.append(j)
+					# 		self.new.append(i + frame_size[0])
+					# 		self.new.append(j + frame_size[1])
+					# 		#end
 
-							#print('New : ',new,' Previous : ',previous)
-							print('Previous : ',self.previous,' New : ',self.new)
-							iou = self.intersection_over_union(self.new,self.previous)
-							print('IOU : ',iou)
+					# 		#print('New : ',new,' Previous : ',previous)
+					# 		print('Previous : ',self.previous,' New : ',self.new)
+					# 		iou = self.intersection_over_union(self.new,self.previous)
+					# 		print('IOU : ',iou)
 
-							if iou > .3:
-								cv.rectangle(img, (i, j), (i + frame_size[0], j + frame_size[1]), (255, 0, 0), 1)
-								self.previous[:] = []
+					# 		if iou > 0:
+					# 			cv.rectangle(img, (i, j), (i + frame_size[0], j + frame_size[1]), (255, 0, 0), 1)
+					# 			self.previous[:] = []
 
-								self.previous.append(self.new[0])  # have some problem
-								self.previous.append(self.new[1])
-								self.previous.append(self.new[2])
-								self.previous.append(self.new[3])
-								print('==> Previous : ',self.previous,' New : ',self.new)
-								self.new[:] = []
-							else:
-								self.new[:] = []
-								# pass
-								#previous = new
-							p_iou = p_iou + 1
-							p = p + 1
+					# 			self.previous.append(self.new[0])  # have some problem
+					# 			self.previous.append(self.new[1])
+					# 			self.previous.append(self.new[2])
+					# 			self.previous.append(self.new[3])
+					# 			print('==> Previous : ',self.previous,' New : ',self.new)
+					# 			self.new[:] = []
+					# 		else:
+					# 			self.new[:] = []
+					# 			# pass
+					# 			#previous = new
+					# 		p_iou = p_iou + 1
+					# 		p = p + 1
 
-						else:
+					# 	else:
 
-							cv.rectangle(img, (i, j), (i + frame_size[0], j + frame_size[1]), (255, 0, 0), 1)
+					# 		cv.rectangle(img, (i, j), (i + frame_size[0], j + frame_size[1]), (255, 0, 0), 1)
 
-							#making the list of coordinates of previous box
-							self.previous.append(i)
-							self.previous.append(j)
-							self.previous.append(i + frame_size[0])
-							self.previous.append(j + frame_size[1])
-							#end
-							p_iou = p_iou + 1
-							p = p + 1
-						#end conditions
-						#print("\rPediction : ",classes," Total nuber of pedestrain : ",p,end="")
-					# else:
-					print('=====> Previous : ',self.previous,' New : ',self.new)
-						#cv.rectangle(img, (i, j), (i + frame_size[0], j + frame_size[1]), (0, 0, 255), 1)
-						#pass
+					# 		#making the list of coordinates of previous box
+					# 		self.previous.append(i)
+					# 		self.previous.append(j)
+					# 		self.previous.append(i + frame_size[0])
+					# 		self.previous.append(j + frame_size[1])
+					# 		#end
+					# 		p_iou = p_iou + 1
+					# 		p = p + 1
+					# 	#end conditions
+					# 	#print("\rPediction : ",classes," Total nuber of pedestrain : ",p,end="")
+					# # else:
+					# print('=====> Previous : ',self.previous,' New : ',self.new)
+					# 	#cv.rectangle(img, (i, j), (i + frame_size[0], j + frame_size[1]), (0, 0, 255), 1)
+					# 	#pass
+
+						# self.new.append(i)
+						# self.new.append(j)
+						# self.new.append(i + frame_size[0])
+						# self.new.append(j + frame_size[1])
+
+						coordinates[0] = i
+						coordinates[1] = j
+						coordinates[2] = frame_size[0]
+						coordinates[3] = frame_size[1]
+						self.all_coordinates.append(coordinates)
+						p = p + 1
+
 						
 				except ValueError:
 					#print('except')
@@ -396,6 +416,21 @@ class cnn_dev:
 
 		print()
 		print('Total number of pedestrian : ',p)
+
+
+		new_coordinates_array = np.asarray(self.all_coordinates).reshape(p,4)
+		print('New coordinates as an array shape : ', new_coordinates_array)
+
+
+		# perform non-maximum suppression on the bounding boxes
+		pick = non_max_suppression_slow(new_coordinates_array, 0.3)
+		#print "[x] after applying non-maximum, %d bounding boxes" % (len(pick))
+
+	# loop over the picked bounding boxes and draw them
+		for (startX, startY, endX, endY) in pick:
+			cv.rectangle(img, (int(startX), int(startY)), (int(endX), int(endY)), (0, 255, 0), 2)
+
+
 
 		out = Image.fromarray(img)
 
