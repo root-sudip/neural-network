@@ -333,13 +333,15 @@ class cnn_dev:
 
 		self.all_coordinates = []
 
-		coordinates = np.zeros(4)
+		
 
 
 
 		for i in range(0,height,strides[1]):
 			for j in range(0,width,strides[0]):
 				try:
+					
+					coordinates = np.zeros([4])
 
 					#cv.rectangle(img, (i, j), (i + frame_size[0], j + frame_size[1]), (255, 0, 0), 1)
 					crop = np.asarray(Image.fromarray(img[i:i+frame_size[0],j:j+frame_size[1]]).resize((32,32), Image.ANTIALIAS))
@@ -413,6 +415,7 @@ class cnn_dev:
 						coordinates[1] = j
 						coordinates[2] = frame_size[0]
 						coordinates[3] = frame_size[1]
+						print(' ==> ', coordinates)
 						self.all_coordinates.append(coordinates)
 						p = p + 1
 
@@ -473,7 +476,7 @@ elif sys.argv[1] == 'test':
 	start = time.time() #starting time
 
 	ob.load_model()
-	ob.test_model(filename=sys.argv[2],output_filename=sys.argv[3],all_box_output=sys.argv[4],frame_size=(22,42),strides=(30,10))
+	ob.test_model(filename=sys.argv[2],output_filename=sys.argv[3],all_box_output=sys.argv[4],frame_size=(100,130),strides=(20,10))
 
 	print('Total testing time : ',time.time() - start) #total time taken to complete the testing
 
