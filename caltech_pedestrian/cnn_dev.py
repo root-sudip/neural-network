@@ -313,12 +313,15 @@ class cnn_dev:
 		self.model = model_from_json(self.model)
 		self.model.load_weights("model_cnn.h5")
 
-	def test_model(self,filename=None,output_filename=None,frame_size=None, strides=None):
+	def test_model(self,filename=None,output_filename=None,all_box_output = None, frame_size=None, strides=None):
 
 		#.resize((32,32), Image.ANTIALIAS)
 
 
 		img = np.asarray(Image.open(filename))
+
+		temp = np.asarray(Image.open(filename))
+
 		print('Imput image shape for testing : ',img.shape)
 		width = img.shape[0]
 		height = img.shape[1]
@@ -402,12 +405,18 @@ class cnn_dev:
 						# self.new.append(i + frame_size[0])
 						# self.new.append(j + frame_size[1])
 
+						##added
+
+						cv.rectangle(temp, (i, j), (i + frame_size[0], j + frame_size[1]), (255, 0, 0), 1)
+
 						coordinates[0] = i
 						coordinates[1] = j
 						coordinates[2] = frame_size[0]
 						coordinates[3] = frame_size[1]
 						self.all_coordinates.append(coordinates)
 						p = p + 1
+
+						##added part end
 
 						
 				except ValueError:
@@ -433,11 +442,17 @@ class cnn_dev:
 
 
 		out = Image.fromarray(img)
+		out_allbox = Image.fromarray(temp)
 
 		if output_filename == None:
 			out.save("rectangle.png")
 		else:
 			out.save(output_filename)
+
+		if all_box_output == None:
+			out_allbox.save("all_box.png")
+		else:
+			out_allbox.save(all_box_output)
 
 ob = cnn_dev(20)
 
@@ -458,7 +473,7 @@ elif sys.argv[1] == 'test':
 	start = time.time() #starting time
 
 	ob.load_model()
-	ob.test_model(filename=sys.argv[2],output_filename=sys.argv[3],frame_size=(22,42),strides=(30,10))
+	ob.test_model(filename=sys.argv[2],output_filename=sys.argv[3],all_box_output=sys.argv[4],frame_size=(22,42),strides=(30,10))
 
 	print('Total testing time : ',time.time() - start) #total time taken to complete the testing
 
