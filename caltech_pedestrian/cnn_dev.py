@@ -26,6 +26,10 @@ from keras.layers import Dropout, Flatten
 from keras.layers import Conv2D, MaxPooling2D
 from keras.models import model_from_json
 
+from keras import optimizers
+
+from keras.callbacks import ModelCheckpoint
+
 
 from PIL import ImageFont, ImageDraw, ImageEnhance
 import cv2 as cv
@@ -222,6 +226,11 @@ class cnn_dev:
 
 
 	def train_model(self, samples=None,train_sample=None):
+
+
+		checkpointer = ModelCheckpoint(filepath="model_cnn.h5", verbose=1, save_best_only=True)
+		sgd = optimizers.SGD(lr=0.01, decay=1e-6, momentum=0.005, nesterov=True)
+		self.model.compile(loss='categorical_crossentropy', optimizer=sgd, metrics=['accuracy'])
 
 		if samples == None:
 			print('Enter number of samples for training set')
@@ -468,6 +477,7 @@ if sys.argv[1] == 'train':
 	ob.load_path()
 	ob.load_data_for_validation(samples=52349)
 	ob.create_model()
+	# ob.load_model()
 	ob.train_model(samples=291566,train_sample=5000)
 	ob.save_model()
 
