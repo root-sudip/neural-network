@@ -309,11 +309,11 @@ class cnn_dev:
 		self.model.save_weights("model_cnn.h5")
 
 	def load_model(self):
-		json_file = open('model_cnn.json', 'r')
+		json_file = open('models/85/model_cnn.json', 'r')
 		self.model = json_file.read()
 		json_file.close()
 		self.model = model_from_json(self.model)
-		self.model.load_weights("model_cnn.h5")
+		self.model.load_weights("models/85/model_cnn.h5")
 
 	def test_model(self,filename=None,output_filename=None,all_box_output = None, frame_size=None, strides=None):
 
