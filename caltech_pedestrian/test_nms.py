@@ -3,8 +3,9 @@ def test_model(self,filename,frame_size, strides):
 		coordinates = []
 
 		image = cv.imread(filename)
-		(winW, winH) = (128, 350)
+		(winW, winH) = (128, 400)
 		k = 0
+		color_change = 0
 		for resized in pyramid(image, scale=0):
 		# loop over the sliding window for each layer of the pyramid
 			for (x, y, window) in sliding_window(resized, stepSize=32, windowSize=(winW, winH)):
@@ -18,7 +19,7 @@ def test_model(self,filename,frame_size, strides):
 				if classes == 1:
 					prob = self.model.predict(croped_image)[0]
 					print('confidence value : ',prob[1])
-					if prob[1] > .80:
+					if prob[1] > .70:
 						cv.rectangle(image, (x, y), (x + winW, y + winH), (255, 0, 0), 1)
 						coordinates.append([x,y,x+winW,y+winH])
 				else:
@@ -56,7 +57,8 @@ def test_model(self,filename,frame_size, strides):
  
 		# loop over the picked bounding boxes and draw them
 		for (startX, startY, endX, endY) in pick:
-			cv.rectangle(image, (startX, startY), (endX, endY), (0, 255, 0), 2)
+			cv.rectangle(image, (startX, startY), (endX, endY), (0, 255, color_change), 2)
+			color_change = color_change + 255
 
 
 		img_save = Image.fromarray(image)
