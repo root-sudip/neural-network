@@ -320,6 +320,6 @@ elif input == 'Test':
     obj.predict(X_Test,28000,True)
 
 else:
-    print('You should enter Train/Test.')
+    print('You should write Train/Test.')
 
 
