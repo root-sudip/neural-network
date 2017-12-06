@@ -289,7 +289,7 @@ class CNN:
                 if visualize == True:
                     self.visualize(out_last,reshape, i)
                 loss += lo
-
+            print()
             total_loss = loss / number_of_images
             print('Loss : ', total_loss)
 
