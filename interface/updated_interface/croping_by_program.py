@@ -1,5 +1,7 @@
-"""python3 croping_by_program.py a.csv out1/"""
-
+"""
+Developer: Sudip Das
+Licence : Indian Statistical Institute
+"""
 
 import csv
 import sys
@@ -8,6 +10,11 @@ from PIL import Image
 file_name = sys.argv[1]
 
 out_name = sys.argv[2]
+
+if not os.path.exists(sys.argv[2]):
+        os.makedirs(sys.argv[2])
+
+
 
 with open(file_name) as fl:
         line = csv.reader(fl)
