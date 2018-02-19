@@ -6,6 +6,8 @@ from config import Config
 import utils
 import sys
 import os
+
+import csv
 #import model as modellib
 
 class CocoDataset(utils.Dataset):
@@ -45,13 +47,32 @@ class CocoDataset(utils.Dataset):
             self.add_class("coco", i, coco.loadCats(i)[0]["name"])
 
         # # Add images
-        for i in image_ids:
-            path=os.path.join(image_dir, coco.imgs[i]['file_name'])
-            #print(path)
-            annotations=coco.loadAnns(coco.getAnnIds(imgIds=[i], iscrowd=False))
-        #print(annotations)
-            for j in annotations:
-                print(path,',',j['category_id'],',',j['bbox'])
+
+        with open('coco_label.csv','wb') as file:
+            csvreader = csv.reader(file, delimiter=',', quotechar='"')
+
+            for i in image_ids:
+                path=os.path.join(image_dir, coco.imgs[i]['file_name'])
+                #print(path)
+                annotations=coco.loadAnns(coco.getAnnIds(imgIds=[i], iscrowd=False))
+            #print(annotations)
+                for j in annotations:
+                    print(path,',',j['category_id'],',',j['bbox'][0],',',j['bbox'][1],',',j['bbox'][2],',',j['bbox'][3])
+                    # csvreader.write(j['category_id'])
+                    # csvreader.write(',')
+                    # csvreader.write(path)
+                    # csvreader.write(',')
+                    # csvreader.write(j['bbox'][0])
+                    # csvreader.write(',')
+                    # csvreader.write(j['bbox'][1])
+                    # csvreader.write(',')
+                    # csvreader.write(j['bbox'][2])
+                    # csvreader.write(',')
+                    # csvreader.write(j['bbox'][3])
+
+                #csvreader.write('\n')
+
+
                 #print()
 
 
