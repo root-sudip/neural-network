@@ -46,7 +46,7 @@ def bb_intersection_over_union(boxA, boxB):
 
 
 
-annotations = json.load(open('annotation/annotations.json'))
+annotations = json.load(open('annotations/annotations.json'))
 
 out_dir = 'dataa/plots'
 if not os.path.exists(out_dir):
@@ -112,4 +112,4 @@ for set_name in sorted(img_fns.keys()):
                                 k = k + 1                   
                 except ValueError:
                     pass
- 
+print('total number of negative samples : ',k)
