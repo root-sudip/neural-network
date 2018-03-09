@@ -17,9 +17,10 @@ import sys
 
 from FindOverlap import *
 
+
 annotations = json.load(open('annotations/annotations.json'))
 
-out_dir = 'dataa/plots'
+out_dir = 'data/plots'
 if not os.path.exists(out_dir):
     os.makedirs(out_dir)
 
@@ -62,9 +63,9 @@ for set_name in sorted(img_fns.keys()):
 
 
                 try:
-                    for i in range(0,height,64):
-                        for j in range(0,width,64):
-                            rect1=[i,j,i+64,j+64]
+                    for i in range(0,height,150):
+                        for j in range(0,width,150):
+                            rect1=[i,j,i+150,j+150]
 
                             for datum in data:
                                 x, y, w, h = [int(v) for v in datum['pos']]
@@ -77,10 +78,15 @@ for set_name in sorted(img_fns.keys()):
                                 else:
                                     f = 1
 
-                            if f == 1:
-                                z = im.crop((i, j, i+64, j+64))
-                                z.save('dumped/'+str(k)+'.png')
-                                k = k + 1                   
+                            if f == 1 and i+150 <height and j+150 < width:
+                                
+                                z = im.crop((i, j, i+150, j+150))
+                                z.save('training_v1/negative/'+str(k)+'.png')
+                                k = k + 1   
+            
                 except ValueError:
                     pass
-print('total number of negative samples : ',k)
+                
+
+ 
+print('Total negative samples : ',k)
