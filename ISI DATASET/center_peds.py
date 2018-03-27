@@ -28,9 +28,6 @@ for match in glob.glob("%s/*" % path):
 				else:
 					result[row[0]] = [row[1:5]]
 
-# for i in result:
-# 	print(i)
-
 with open(sys.argv[2],"a") as file:
 
 	k = 0
@@ -40,27 +37,35 @@ with open(sys.argv[2],"a") as file:
 		image = Image.open(i)
 		#image1 = np.asarray(image)
 		for j in result[i]:
-			#img2 = image.crop((int(j[0]), int(j[1]), int(j[2]), int(j[3])))
 
-			w, h = image.size
+			x = int(j[0])
+			y = int(j[1])
 
-			x = w/2
-			y = h/2
+			x_ = int(j[2]) - int(j[0])
+			y_ = int(j[3]) - int(j[1])
+			x_ = x_/2
+			y_ = y_/2
+			x = x + x_
+			y = y + y_
 
 			file.write(i)
 			file.write(',')
 			file.write(str(x))
 			file.write(',')
 			file.write(str(y))
+			file.write(',')
+			file.write(str(j[0]))
+			file.write(',')
+			file.write(str(j[1]))
+			file.write(',')
+			file.write(str(j[2]))
+			file.write(',')
+			file.write(str(j[3]))
 			file.write('\n')
 
 			#img2.save("dump/"+str(k)+'.png')
 			k = k + 1
 
-		#cv2.rectangle(image, (int(j[0]), int(j[1])), (int(j[2]), int(j[3])), (255,0,0), 2)
-		#print(j[0],"," ,j[1],"," ,j[2],"," ,j[3])
-		#print(">",j)
-	#img_s = Image.fromarray(image)
 
 print('Total number of pedestrian : ',k)
 
