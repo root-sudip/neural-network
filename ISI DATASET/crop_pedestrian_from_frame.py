@@ -18,7 +18,7 @@ path = sys.argv[1]
 
 result = {}
 
-for match in glob.glob("%s/*" % path):
+for match in glob.iglob("%s/*/*" % path,recursive=True):
 	if match.lower()[-4:] in ('.csv'):
 		with open(match) as csvfile:
 			csvreader = csv.reader(csvfile, delimiter=',', quotechar='"')
