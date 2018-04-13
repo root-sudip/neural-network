@@ -13,8 +13,7 @@ import sys
 
 import glob
 import os 
-
-
+import transform_cordinates as tc
 
 result = {}
 path = sys.argv[1]
@@ -47,15 +46,18 @@ with open(sys.argv[2],"a") as file:
 		#image1 = np.asarray(image)
 		for j in result[i]:
 
+			yy,yy_ = tc.transform(int(j[1]),int(j[3]))
+
 			x = int(j[0])
-			y = int(j[1])
+			y = int(yy)
 
 			x_ = int(j[2]) - int(j[0])
-			y_ = int(j[3]) - int(j[1])
+			y_ = yy_ - yy
 			x_ = x_/2
 			y_ = y_/2
 			x = x + x_
 			y = y + y_
+
 
 			file.write(i)
 			file.write(',')
@@ -65,14 +67,14 @@ with open(sys.argv[2],"a") as file:
 			file.write(',')
 			file.write(str(j[0]))
 			file.write(',')
-			file.write(str(j[1]))
+			file.write(str(yy))
 			file.write(',')
 			file.write(str(j[2]))
 			file.write(',')
-			file.write(str(j[3]))
+			file.write(str(yy_))
 			file.write('\n')
 			img2 = image.crop((int(j[0]), int(j[1]), int(j[2]), int(j[3])))
-			img2.save("training/positive/"+str(k)+'.png')
+			#img2.save("training/positive/"+str(k)+'.png')
 			k = k + 1
 
 
