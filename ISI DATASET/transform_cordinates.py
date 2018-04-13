@@ -36,6 +36,6 @@ import os
 # 			csvreader_recorrect.write('\n')
 
 def transform(y,y_):
-	y = 720 - int(float(y))
+	y = 1280 - int(float(y))
 	y_= 1280 - int(float(y_))
 	return y,y_        				
