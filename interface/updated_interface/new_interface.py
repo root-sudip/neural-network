@@ -4,7 +4,7 @@ Licence : Indian Statistical Institute
 sudo apt-get install python-imaging-tk #for pyhton2
 python3-pil.imagetk # fo python3
 
- To run this, pyhton3 interface.py inputdir/ outputdir/ csvfilename
+ To run this, python3 interface.py inputdir/ outputdir/ csvfilename
 """
 
 
